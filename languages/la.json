@@ -1,0 +1,85 @@
+{
+  "code": "la",
+  "name": "Latin",
+  "grids": {
+    "case5": {
+      "label": "Case and number",
+      "rows": [
+        { "id": "nom", "label": "Nominative" },
+        { "id": "gen", "label": "Genitive" },
+        { "id": "dat", "label": "Dative" },
+        { "id": "acc", "label": "Accusative" },
+        { "id": "abl", "label": "Ablative" }
+      ],
+      "cols": [
+        { "id": "sg", "label": "Singular" },
+        { "id": "pl", "label": "Plural" }
+      ]
+    },
+    "case6": {
+      "label": "Case and number, with the vocative",
+      "rows": [
+        { "id": "nom", "label": "Nominative" },
+        { "id": "gen", "label": "Genitive" },
+        { "id": "dat", "label": "Dative" },
+        { "id": "acc", "label": "Accusative" },
+        { "id": "abl", "label": "Ablative" },
+        { "id": "voc", "label": "Vocative" }
+      ],
+      "cols": [
+        { "id": "sg", "label": "Singular" },
+        { "id": "pl", "label": "Plural" }
+      ]
+    }
+  },
+  "defaultGrid": "case5",
+  "paradigms": {
+    "decl1": { "label": "1st declension", "grid": "case5" },
+    "decl2m": { "label": "2nd declension, masculine -us", "grid": "case5" },
+    "decl2n": { "label": "2nd declension, neuter -um", "grid": "case5" }
+  },
+  "inputKeys": ["ā", "ē", "ī", "ō", "ū"],
+  "speech": {
+    "lang": "it-IT",
+    "rules": [
+      { "match": "[\\u0304\\u0306]", "replace": "", "why": "Drop macrons and breves; an Italian voice has no use for them." },
+      { "match": ",\\s*[mfn]\\.(\\s*/\\s*[mfn]\\.)*\\s*$", "replace": "", "why": "Drop a trailing gender abbreviation, which would be read as a letter name." },
+      { "match": "ae|æ", "replace": "e", "why": "Ecclesiastical ae is 'eh'; Italian reads it as two vowels, and c/g before it would stay hard." },
+      { "match": "oe|œ", "replace": "e", "why": "Same as ae." },
+      { "match": "(?<![stx])ti(?=[aeiou])", "replace": "zi", "why": "ti before a vowel is 'tsee', except after s, t or x." },
+      { "match": "\\bmihi\\b", "replace": "michi", "why": "Ecclesiastical h in mihi is 'k'." },
+      { "match": "\\bnihil", "replace": "nichil", "why": "Same as mihi." },
+      { "match": "ph", "replace": "f", "why": "Italian has no ph." },
+      { "match": "th", "replace": "t", "why": "Italian has no th." },
+      { "match": "y", "replace": "i", "why": "Italian has no y." },
+      { "match": "j", "replace": "i", "why": "Consonantal i, in texts that print j." }
+    ],
+    "tests": [
+      { "text": "Deus, Deī, m.", "spoken": "deus, dei" },
+      { "text": "cīvis, cīvis, m./f.", "spoken": "civis, civis" },
+      { "text": "caelum", "spoken": "celum" },
+      { "text": "glōriae", "spoken": "glorie" },
+      { "text": "poena", "spoken": "pena" },
+      { "text": "grātia", "spoken": "grazia" },
+      { "text": "hostia", "spoken": "hostia" },
+      { "text": "mihi", "spoken": "michi" },
+      { "text": "nihil", "spoken": "nichil" },
+      { "text": "prophēta", "spoken": "profeta" },
+      { "text": "thēsaurus", "spoken": "tesaurus" },
+      { "text": "Kyrie", "spoken": "kirie" },
+      { "text": "Jēsus", "spoken": "iesus" }
+    ]
+  },
+  "ignoreWords": ["the", "a", "an", "to"],
+  "spellingVariants": {
+    "letters": [
+      { "variant": "æ", "standard": "ae" },
+      { "variant": "œ", "standard": "oe" },
+      { "variant": "j", "standard": "i" },
+      { "variant": "́", "standard": "" }
+    ],
+    "words": [
+      { "variant": "coelum", "standard": "caelum" }
+    ]
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://corvus.local/languages/schema.json",
+  "title": "Corvus language pack",
+  "description": "Everything the app knows about one target language. The code reads this file instead of assuming a language; the file is named after the code, e.g. la.json.",
+  "type": "object",
+  "required": ["code", "name", "grids", "defaultGrid", "paradigms", "inputKeys", "speech", "ignoreWords", "spellingVariants"],
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "description": "BCP-47 code; matches the 'language' field of card files and this file's name.",
+      "type": "string",
+      "minLength": 2
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "grids": {
+      "description": "Named parse grids, keyed by id. A cell id is '<row id>.<col id>', so a grid's cells are every row crossed with every column.",
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/grid" }
+    },
+    "defaultGrid": {
+      "description": "The grid used by parse cards that don't name one.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+$"
+    },
+    "paradigms": {
+      "description": "Inflection patterns that ending cards point to, keyed by id. Used to report which cells of a pattern have been taught.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["label", "grid"],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "grid": { "type": "string", "pattern": "^[a-z0-9]+$" }
+        }
+      }
+    },
+    "inputKeys": {
+      "description": "Characters for the on-screen key bar above typed answers, in display order.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "speech": {
+      "type": "object",
+      "required": ["lang", "rules", "tests"],
+      "additionalProperties": false,
+      "properties": {
+        "lang": {
+          "description": "BCP-47 code of the default text-to-speech voice. It can differ from the target language when no voice for it exists.",
+          "type": "string",
+          "minLength": 2
+        },
+        "rules": {
+          "description": "Respelling applied to text before it is spoken, never to what is displayed. The text is NFD-normalized, each rule is applied in order as a global, case-insensitive regular expression, and the result is NFC-normalized. Patterns use only syntax that JavaScript and Python read the same way, and replacements are literal text (no group references).",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["match", "replace"],
+            "additionalProperties": false,
+            "properties": {
+              "match": { "type": "string", "minLength": 1 },
+              "replace": { "type": "string" },
+              "why": { "type": "string" }
+            }
+          }
+        },
+        "tests": {
+          "description": "Expected output of the rules for sample inputs (compared lowercased). The test suite runs every pack's vectors.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["text", "spoken"],
+            "additionalProperties": false,
+            "properties": {
+              "text": { "type": "string", "minLength": 1 },
+              "spoken": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "ignoreWords": {
+      "description": "Words in the learner's own language that may be added or left out of a typed meaning without changing it (articles, the 'to' of an infinitive). Compared lowercased, as whole words.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "spellingVariants": {
+      "description": "Spellings that printed texts use and the cards avoid. check-cards warns when card text in the target language contains a variant. Answer checking does not use these; the variants are taught in notes, for reading.",
+      "type": "object",
+      "required": ["letters", "words"],
+      "additionalProperties": false,
+      "properties": {
+        "letters": {
+          "description": "Characters, compared after NFD normalization, so a combining mark can be listed on its own.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/variant" }
+        },
+        "words": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/variant" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "axis": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Lowercase letters and digits; may be dot-joined (e.g. 'sg.m') when one axis combines two features.",
+            "type": "string",
+            "pattern": "^[a-z0-9]+(\\.[a-z0-9]+)*$"
+          },
+          "label": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "grid": {
+      "type": "object",
+      "required": ["label", "rows", "cols"],
+      "additionalProperties": false,
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "rows": { "$ref": "#/$defs/axis" },
+        "cols": { "$ref": "#/$defs/axis" }
+      }
+    },
+    "variant": {
+      "type": "object",
+      "required": ["variant", "standard"],
+      "additionalProperties": false,
+      "properties": {
+        "variant": { "type": "string", "minLength": 1 },
+        "standard": {
+          "description": "The spelling the cards use; empty when the variant is a mark the cards leave out.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

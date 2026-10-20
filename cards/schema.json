@@ -23,11 +23,9 @@
   },
   "$defs": {
     "parseCell": {
-      "description": "case.number, e.g. 'gen.sg'.",
-      "enum": [
-        "nom.sg", "gen.sg", "dat.sg", "acc.sg", "abl.sg", "voc.sg", "loc.sg",
-        "nom.pl", "gen.pl", "dat.pl", "acc.pl", "abl.pl", "voc.pl", "loc.pl"
-      ]
+      "description": "One cell of a grid: its row id and column id joined by '.', e.g. 'gen.sg'. Grids are defined in languages/<language>.json, and check-cards fails on a cell the grid doesn't have.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(\\.[a-z0-9]+)*$"
     },
     "card": {
       "type": "object",
@@ -41,7 +39,7 @@
         },
         "type": { "enum": ["vocab", "concept", "ending", "parse", "phrase"] },
         "lemma": {
-          "description": "The dictionary headword the card is about, lowercase with its marks (e.g. 'aqua', 'amō' for amat). Cards that share a lemma are siblings.",
+          "description": "The dictionary headword the card is about, lowercase with its marks (e.g. 'aqua', 'amō' for amat). Cards that share a lemma are siblings. It is also the answer of the reverse card.",
           "type": "string",
           "minLength": 1
         },
@@ -51,7 +49,7 @@
           "minLength": 1
         },
         "answer": {
-          "description": "The canonical answer. For parse cards, the list of every valid case.number cell.",
+          "description": "The canonical answer. For parse cards, the list of every valid cell in the card's grid.",
           "oneOf": [
             { "type": "string", "minLength": 1 },
             {
@@ -71,9 +69,49 @@
           "description": "Override the type's default answer mode.",
           "enum": ["typed", "reveal", "grid"]
         },
+        "grid": {
+          "description": "parse only: the id of a grid in languages/<language>.json. Without it, the language's defaultGrid is used.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+$"
+        },
         "reverse": {
-          "description": "vocab only: also generate an English-to-target card with id '<id>~r'.",
-          "type": "boolean"
+          "description": "vocab only: also generate a reverse card with id '<id>~r'. It shows this card's answer (and the hint) and expects the lemma, typed. Use true for a plain reverse card, or an object to add extras.",
+          "oneOf": [
+            { "const": true },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "accept": {
+                  "description": "Other target-language answers that count as correct.",
+                  "type": "array",
+                  "items": { "type": "string", "minLength": 1 }
+                },
+                "hint": {
+                  "description": "Shown with the prompt to rule out a near-synonym, e.g. 'not animus'.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "retired": {
+                  "description": "Hide the reverse card only; the forward card stays.",
+                  "type": "boolean"
+                }
+              }
+            }
+          ]
+        },
+        "paradigm": {
+          "description": "ending only: the id of the paradigm in languages/<language>.json that the form belongs to. Requires cell.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+$"
+        },
+        "cell": {
+          "description": "ending only: the form's cell in the paradigm's grid, e.g. 'gen.pl'. Requires paradigm.",
+          "$ref": "#/$defs/parseCell"
+        },
+        "strictMarks": {
+          "description": "Typed answers only: an answer that is right except for its marks is wrong, not a slip. For forms whose unmarked spelling is a different form the cards don't have yet (vēnit/venit).",
+          "const": true
         },
         "hint": { "type": "string" },
         "notes": {
@@ -102,7 +140,19 @@
         },
         {
           "if": { "required": ["reverse"] },
-          "then": { "properties": { "type": { "const": "vocab" } } }
+          "then": { "required": ["lemma"], "properties": { "type": { "const": "vocab" } } }
+        },
+        {
+          "if": { "required": ["grid"] },
+          "then": { "properties": { "type": { "const": "parse" } } }
+        },
+        {
+          "if": { "anyOf": [{ "required": ["paradigm"] }, { "required": ["cell"] }] },
+          "then": { "required": ["paradigm", "cell"], "properties": { "type": { "const": "ending" } } }
+        },
+        {
+          "if": { "required": ["strictMarks"] },
+          "then": { "not": { "properties": { "type": { "const": "parse" } } } }
         }
       ]
     }
