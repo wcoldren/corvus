@@ -180,7 +180,7 @@ Send fixes as a list of `{id, field, value}` objects, one per field changed:
 ```json
 [
   { "id": "la-02-v-anima", "field": "accept", "value": ["spirit", "life", "breath", "mind"] },
-  { "id": "la-03-x-servo", "field": "retired", "value": true }
+  { "id": "la-03-x-caeli", "field": "retired", "value": true }
 ]
 ```
 

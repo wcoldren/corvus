@@ -5,17 +5,6 @@
   "title": "The second declension: masculine -us and neuter -um",
   "cards": [
     {
-      "id": "la-03-c-decl2-endings",
-      "type": "concept",
-      "prompt": "Second-declension nouns end in what in the nominative singular, and which genders go with each?",
-      "answer": "-us (mostly masculine) and -um (neuter).",
-      "notes": "Also -er/-ir masculines (*puer, ager, vir, liber, magister*), coming later.",
-      "tags": [
-        "concept",
-        "decl-2"
-      ]
-    },
-    {
       "id": "la-03-c-neuter-rule",
       "type": "concept",
       "prompt": "What is the neuter rule?",
@@ -120,45 +109,6 @@
       ]
     },
     {
-      "id": "la-03-e-deus-gen-sg",
-      "type": "ending",
-      "lemma": "deus",
-      "paradigm": "decl2m",
-      "cell": "gen.sg",
-      "prompt": "2nd decl. masc. · genitive singular of *Deus*",
-      "answer": "Deī",
-      "tags": [
-        "ending",
-        "decl-2"
-      ]
-    },
-    {
-      "id": "la-03-e-dominus-dat-sg",
-      "type": "ending",
-      "lemma": "dominus",
-      "paradigm": "decl2m",
-      "cell": "dat.sg",
-      "prompt": "2nd decl. masc. · dative singular of *dominus*",
-      "answer": "dominō",
-      "tags": [
-        "ending",
-        "decl-2"
-      ]
-    },
-    {
-      "id": "la-03-e-agnus-acc-sg",
-      "type": "ending",
-      "lemma": "agnus",
-      "paradigm": "decl2m",
-      "cell": "acc.sg",
-      "prompt": "2nd decl. masc. · accusative singular of *agnus*",
-      "answer": "agnum",
-      "tags": [
-        "ending",
-        "decl-2"
-      ]
-    },
-    {
       "id": "la-03-e-servus-gen-pl",
       "type": "ending",
       "lemma": "servus",
@@ -167,20 +117,6 @@
       "prompt": "2nd decl. masc. · genitive plural of *servus*",
       "answer": "servōrum",
       "notes": "*Servus servōrum Deī*, \"servant of the servants of God\", a papal title.",
-      "tags": [
-        "ending",
-        "decl-2"
-      ]
-    },
-    {
-      "id": "la-03-e-agnus-abl-pl",
-      "type": "ending",
-      "lemma": "agnus",
-      "paradigm": "decl2m",
-      "cell": "abl.pl",
-      "prompt": "2nd decl. masc. · ablative plural of *agnus*",
-      "answer": "agnīs",
-      "notes": "The dative plural is the same form.",
       "tags": [
         "ending",
         "decl-2"
@@ -200,20 +136,6 @@
       ]
     },
     {
-      "id": "la-03-x-servo",
-      "type": "parse",
-      "lemma": "servus",
-      "prompt": "servō",
-      "answer": [
-        "dat.sg",
-        "abl.sg"
-      ],
-      "tags": [
-        "parse",
-        "decl-2"
-      ]
-    },
-    {
       "id": "la-03-x-caeli",
       "type": "parse",
       "lemma": "caelum",
@@ -229,21 +151,6 @@
       ]
     },
     {
-      "id": "la-03-x-ferrum",
-      "type": "parse",
-      "lemma": "ferrum",
-      "prompt": "ferrum",
-      "answer": [
-        "nom.sg",
-        "acc.sg"
-      ],
-      "notes": "Neuter rule: nominative = accusative.",
-      "tags": [
-        "parse",
-        "decl-2"
-      ]
-    },
-    {
       "id": "la-03-h-hominem",
       "type": "ending",
       "lemma": "homō",
@@ -252,36 +159,6 @@
       "notes": "*homō, hominis, m.* The stem *homin-* comes from the genitive, so dropping -em does not give the headword.",
       "tags": [
         "headword"
-      ]
-    },
-    {
-      "id": "la-03-h-verba",
-      "type": "ending",
-      "lemma": "verbum",
-      "prompt": "*verba*: dictionary headword?",
-      "answer": "verbum",
-      "notes": "*verbum, verbī, n.* Neuter plurals end in -a, so this is not a 1st-declension *verba*.",
-      "tags": [
-        "headword"
-      ]
-    },
-    {
-      "id": "la-03-p-agnus-dei",
-      "type": "phrase",
-      "prompt": "Agnus Deī",
-      "answer": "Lamb of God",
-      "notes": "*Agnus* nominative, *Deī* genitive. AH-nyoos DEH-ee.",
-      "tags": [
-        "phrase"
-      ]
-    },
-    {
-      "id": "la-03-p-servi-dominum-amant",
-      "type": "phrase",
-      "prompt": "Servī Dominum amant.",
-      "answer": "The servants love the Lord.",
-      "tags": [
-        "phrase"
       ]
     }
   ]

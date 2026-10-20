@@ -69,7 +69,7 @@ The numbers behind that, simulated day by day with FSRS-6 default weights at ret
 
 An instance is one schedulable card, so a vocab card with `reverse` counts twice. check-cards also estimates each file's first-pass cost in seconds (reveal 8 s, grid 12 s, typed 15 s, until logged means replace them) and warns above 240 s. When a lesson has more to say, cut reverse cards and paradigm cells, never lemmas.
 
-Lessons 1 to 3 were written before this budget and hold 17, 25 and 24 instances. Lessons 2 and 3 are slightly over, and the new-card allowance spreads them out.
+Lessons 1 to 3 were written before this budget and hold 17, 16 and 14 instances. Lessons 2 and 3 were cut to the per-kind limits. They have fewer lemmas than the budget allows, because the trim cut forms and concepts, not words.
 
 The main workload levers are the card budget, the learning steps and the new-card allowance. Desired retention is a minor one: 0.85 saves roughly 10 to 15 percent of reviews and costs more forgetting.
 

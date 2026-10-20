@@ -5,26 +5,6 @@
   "title": "The first declension and the five cases",
   "cards": [
     {
-      "id": "la-02-c-nominative",
-      "type": "concept",
-      "prompt": "What job does the **nominative** case do?",
-      "answer": "The subject of the sentence.",
-      "tags": [
-        "concept",
-        "cases"
-      ]
-    },
-    {
-      "id": "la-02-c-genitive",
-      "type": "concept",
-      "prompt": "What job does the **genitive** case do?",
-      "answer": "\"Of\": it links the noun to another noun (possession, belonging).",
-      "tags": [
-        "concept",
-        "cases"
-      ]
-    },
-    {
       "id": "la-02-c-dative",
       "type": "concept",
       "prompt": "What job does the **dative** case do?",
@@ -42,17 +22,6 @@
       "tags": [
         "concept",
         "cases"
-      ]
-    },
-    {
-      "id": "la-02-c-decl1-gender",
-      "type": "concept",
-      "prompt": "First-declension nouns (like *aqua*) are almost all which gender?",
-      "answer": "Feminine.",
-      "notes": "Masculine exceptions: *nauta, agricola, prophēta*.",
-      "tags": [
-        "concept",
-        "decl-1"
       ]
     },
     {
@@ -167,33 +136,6 @@
       ]
     },
     {
-      "id": "la-02-e-vita-gen-sg",
-      "type": "ending",
-      "lemma": "vīta",
-      "paradigm": "decl1",
-      "cell": "gen.sg",
-      "prompt": "1st decl. · genitive singular of *vīta*",
-      "answer": "vītae",
-      "notes": "*Aqua vītae*, \"water of life\".",
-      "tags": [
-        "ending",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-e-gloria-acc-sg",
-      "type": "ending",
-      "lemma": "glōria",
-      "paradigm": "decl1",
-      "cell": "acc.sg",
-      "prompt": "1st decl. · accusative singular of *glōria*",
-      "answer": "glōriam",
-      "tags": [
-        "ending",
-        "decl-1"
-      ]
-    },
-    {
       "id": "la-02-e-aqua-abl-sg",
       "type": "ending",
       "lemma": "aqua",
@@ -214,20 +156,6 @@
       "cell": "gen.pl",
       "prompt": "1st decl. · genitive plural of *anima*",
       "answer": "animārum",
-      "tags": [
-        "ending",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-e-ecclesia-abl-pl",
-      "type": "ending",
-      "lemma": "ecclēsia",
-      "paradigm": "decl1",
-      "cell": "abl.pl",
-      "prompt": "1st decl. · ablative plural of *ecclēsia*",
-      "answer": "ecclēsiīs",
-      "notes": "The dative plural is the same form.",
       "tags": [
         "ending",
         "decl-1"
@@ -260,40 +188,6 @@
       "tags": [
         "parse",
         "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-x-terris",
-      "type": "parse",
-      "lemma": "terra",
-      "prompt": "terrīs",
-      "answer": [
-        "dat.pl",
-        "abl.pl"
-      ],
-      "tags": [
-        "parse",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-p-gloria-in-excelsis-deo",
-      "type": "phrase",
-      "prompt": "Glōria in excelsīs Deō.",
-      "answer": "Glory to God in the highest.",
-      "notes": "*Glōria* is nominative, with \"be\" understood; *Deō* is dative, \"to God\".",
-      "tags": [
-        "phrase"
-      ]
-    },
-    {
-      "id": "la-02-p-vita-terrae",
-      "type": "phrase",
-      "prompt": "Vīta terrae",
-      "answer": "The life of the earth",
-      "notes": "*terrae* is genitive here: \"of the earth\".",
-      "tags": [
-        "phrase"
       ]
     }
   ]
