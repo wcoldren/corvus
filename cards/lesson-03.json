@@ -181,7 +181,7 @@
     {
       "id": "la-03-x-servo",
       "type": "parse",
-      "prompt": "*servō*: every possible case and number?",
+      "prompt": "servō",
       "answer": [
         "dat.sg",
         "abl.sg"
@@ -194,7 +194,7 @@
     {
       "id": "la-03-x-caeli",
       "type": "parse",
-      "prompt": "*caelī*: every possible case and number?",
+      "prompt": "caelī",
       "answer": [
         "gen.sg",
         "nom.pl"
@@ -207,7 +207,7 @@
     {
       "id": "la-03-x-ferrum",
       "type": "parse",
-      "prompt": "*ferrum*: every possible case and number?",
+      "prompt": "ferrum",
       "answer": [
         "nom.sg",
         "acc.sg"

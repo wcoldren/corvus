@@ -228,7 +228,7 @@
     {
       "id": "la-02-x-aquae",
       "type": "parse",
-      "prompt": "*aquae*: every possible case and number?",
+      "prompt": "aquae",
       "answer": [
         "gen.sg",
         "dat.sg",
@@ -243,7 +243,7 @@
     {
       "id": "la-02-x-terris",
       "type": "parse",
-      "prompt": "*terrīs*: every possible case and number?",
+      "prompt": "terrīs",
       "answer": [
         "dat.pl",
         "abl.pl"
