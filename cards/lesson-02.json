@@ -38,7 +38,7 @@
       "id": "la-02-c-ablative",
       "type": "concept",
       "prompt": "What job does the **ablative** case do?",
-      "answer": "\"By/with/from/in\", usually after a preposition.",
+      "answer": "\"By/with/from/in/at\": after prepositions such as *in, cum, ab, ex*, and often on its own (\"by means of\", or \"at\" a time).",
       "tags": [
         "concept",
         "cases"
@@ -49,6 +49,7 @@
       "type": "concept",
       "prompt": "First-declension nouns (like *aqua*) are almost all which gender?",
       "answer": "Feminine.",
+      "notes": "Masculine exceptions: *nauta, agricola, prophēta*.",
       "tags": [
         "concept",
         "decl-1"
@@ -258,7 +259,7 @@
       "type": "phrase",
       "prompt": "Glōria in excelsīs Deō.",
       "answer": "Glory to God in the highest.",
-      "notes": "*Glōria* is nominative (the subject); *Deō* is dative, \"to God\".",
+      "notes": "*Glōria* is nominative, with \"be\" understood; *Deō* is dative, \"to God\".",
       "tags": [
         "phrase"
       ]

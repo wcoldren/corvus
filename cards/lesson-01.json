@@ -19,6 +19,7 @@
       "type": "concept",
       "prompt": "What does the ending **-m** usually mark on a noun (as in *Deum*, *hominem*)?",
       "answer": "The direct object (accusative singular).",
+      "notes": "Except neuters in -um (*ferrum*), where -m is also the nominative.",
       "tags": [
         "concept",
         "accusative"
@@ -184,7 +185,7 @@
       "prompt": "cuprum, cuprī, n.",
       "answer": "copper",
       "reverse": true,
-      "notes": "Cu. Stem *cupr-* → cuprous, cupric.",
+      "notes": "Cu. Stem *cupr-* → cuprous, cupric. Late Latin, from *Cyprium aes*, \"Cyprian metal\".",
       "tags": [
         "vocab",
         "element",

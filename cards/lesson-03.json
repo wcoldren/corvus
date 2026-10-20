@@ -9,6 +9,7 @@
       "type": "concept",
       "prompt": "Second-declension nouns end in what in the nominative singular, and which genders go with each?",
       "answer": "-us (mostly masculine) and -um (neuter).",
+      "notes": "Also -er/-ir masculines (*puer, ager, vir, liber, magister*), coming later.",
       "tags": [
         "concept",
         "decl-2"
@@ -90,13 +91,13 @@
     {
       "id": "la-03-v-caelum",
       "type": "vocab",
-      "prompt": "caelum, caelī, n.",
+      "prompt": "caelum, caelī, n. (pl. caelī, m.)",
       "answer": "heaven",
       "reverse": true,
       "accept": [
         "sky"
       ],
-      "notes": "CHEH-loom: *c* before *ae* is \"ch\".",
+      "notes": "CHEH-loom: *c* before *ae* is \"ch\". Neuter in the singular, masculine in the plural: caelī, caelōrum, caelīs, caelōs. *Caelī ēnārrant glōriam Deī* (Ps 18:2).",
       "tags": [
         "vocab",
         "decl-2"
@@ -199,6 +200,7 @@
         "gen.sg",
         "nom.pl"
       ],
+      "notes": "Neuter in the singular, masculine in the plural: caelī, caelōrum, caelīs, caelōs. *Caelī ēnārrant glōriam Deī* (Ps 18:2).",
       "tags": [
         "parse",
         "decl-2"
