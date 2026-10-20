@@ -75,14 +75,14 @@ The main workload levers are the card budget, the learning steps and the new-car
 
 ## Card history epoch
 
-The epoch is the first review recorded in the installed Home Screen app.
+The epoch is the first real review recorded in the installed Home Screen app: the first one after the Reset that ends the M1a acceptance run.
 
 - **Before it**, card files may be restructured freely: cards deleted, renamed, merged or moved. Testing happens only in a Safari tab, the Simulator or a desktop browser.
 - **After it**, only two kinds of change are allowed. A same-fact fix is made in place: a typo, a macron, an added `accept`, a note, or a missing valid parse cell. If the fact a card tests changes, the old id gets `"retired": true` and a new id carries the new fact. Ids are never renamed, reused or deleted, and cards never move between files.
-- The id registry (check-cards rule 10) starts from the deploy that precedes the epoch.
-- If test history reaches the installed app early, export it and then Reset before the real first review.
+- The epoch is recorded in `cards/epoch.json`, `{date, commit}`, where `commit` is the deployed build the first review used. check-cards rule 10 applies only once that file exists.
+- Test reviews in the installed app don't start the epoch as long as they are cleared: export them, then Reset. The M1a acceptance run ends this way (criterion 12).
 
-Epoch: not yet reached. Record the date and commit here when it is.
+Epoch: not yet reached.
 
 ## Scheduling
 
@@ -102,7 +102,7 @@ Epoch: not yet reached. Record the date and commit here when it is.
   | `learning_steps` | `['10m']` |
   | `relearning_steps` | `['10m']` |
 
-  A unit test fails if any value differs from this table. The active config is stored as a params row and every review records its `paramsId`.
+  A unit test fails if any value differs from this table. The active config is stored as a params row holding every value in the table, and every review records its `paramsId`.
 - With one 10-minute step, Good on first sight graduates the card, and Again brings it back in about 10 minutes, within the same session through learn-ahead. Each new card costs about one presentation instead of two.
 - Changing desired retention affects each card's next interval only, from its next review. Existing due dates are not changed.
 
@@ -176,10 +176,10 @@ The suggestion is never Easy, and using the hint caps it at Hard. The learner ca
    - Tapping a card shows its review history.
    - Filters: leeches, flagged, suspended.
    - A card whose text changed since its last review is marked "edited".
-4. **Settings**: export, import, rebuild schedule, build id and newest lesson in this build, storage persistence status, and "Check for updates". From M1b: daily goal and max new. From M2: desired retention, the slip setting, rollover hour, learn-ahead, voice and rate, leech threshold, text size, and Reset.
+4. **Settings**: export, import, Reset, rebuild schedule, build id and newest lesson in this build, storage persistence status, and "Check for updates". From M1b: daily goal and max new. From M2: desired retention, the slip setting, rollover hour, the learn-ahead window, voice and rate, leech threshold, and text size.
 5. **Recovery**: see Offline, install and updates.
 
-Leeches (M2): a card whose lapses reach a threshold (default 6) is marked a leech, gets a banner after it is answered, and keeps being scheduled. Any card can be flagged with a note, or suspended and unsuspended. Suspension lives in review state, not in card files.
+Leeches (M2): a card whose lapses reach a threshold (default 6) is marked a leech, gets a banner after it is answered, and keeps being scheduled. Any card can be flagged with a note, or suspended and unsuspended. Flags and suspension are `manual` log rows, so they survive a rebuild and an import; card state caches them, and card files never hold them.
 
 ## Input and display
 
@@ -219,7 +219,7 @@ IndexedDB database `corvus`, opened through `idb`, with these stores:
 
 - `reviewLog`: the record of truth. Rows are appended and never changed. Indexes: `byCard`, `byDay`, `byTs`.
 - `cardState`: review state per card id, with dates as epoch ms. It is a cache, rebuilt by replaying the log ("Rebuild schedule" in Settings). The app never deletes state for an id it no longer finds in the card files; Settings shows "N orphaned cards".
-- `params`: one row per scheduler config: `{id, lib: "ts-fsrs@5.4.2", model: "FSRS-6", w, retention, fuzz, learningSteps, relearningSteps, maxInterval}`.
+- `params`: one row per scheduler config: `{id, lib: "ts-fsrs@5.4.2", model: "FSRS-6", w, retention, fuzz, shortTerm, learningSteps, relearningSteps, maxInterval}`.
 - `daily`: one row per study day (reviews, new cards, total ms), updated in the same transaction as each review. Home and the limiter read these and a bounded cursor over recent rows, never the whole log.
 - `meta`: settings, `unlockedThrough` keyed by language (`{ "la": 3 }`), the last export date and the database version.
 
@@ -236,7 +236,7 @@ Each answer writes its log row, the new card state and the daily aggregate in **
 | `id` | `crypto.randomUUID()`, so rows from different devices or backups merge |
 | `v` | row format version, 1 |
 | `cardId` | the card, including `~r` ids |
-| `kind` | `review`, `undo` (with `undoes`: the undone row's id), or `manual` (a suspend or reset) |
+| `kind` | `review`, `undo` (with `undoes`: the undone row's id), or `manual` (with `action`: `suspend`, `unsuspend`, `flag`, `unflag` or `forget`, which returns one card to new; `note` on a flag). On non-review rows the review fields are null. |
 | `ts` | review time used, epoch ms; `wallTs`, the raw clock reading, when it differs |
 | `studyDay`, `shiftMin`, `tzOffsetMin` | the day the review counts toward, and the exact shift applied |
 | `rating` | the final rating, 1 to 4 |
@@ -269,7 +269,7 @@ The database version only goes up, through one migration per step, each with a t
 - It validates the format and version, then shows a summary: "File: 1,240 reviews, newest 2026-11-02. 37 are not on this device. Nothing here will be removed."
 - On confirm, it merges: the union of log rows and params by id, and the higher `unlockedThrough` per language. It then rebuilds card state by replaying the merged log, and reports any card whose rebuilt state differs from the file's as a warning. Importing the same file twice changes nothing.
 - "Replace all" is an advanced option behind a second, typed confirmation.
-- Reset uses the same forced export and a typed confirmation.
+- Reset uses the same forced export and a typed confirmation, then deletes every store in the `corvus` database and every `corvus:` localStorage key. Caches are left alone.
 
 ## Offline, install and updates
 
@@ -342,7 +342,7 @@ Failures:
 7. **Lemmas**: every vocab, ending and parse card has a `lemma`.
 8. **Self-check**: every typed card's own answer and `accept` entries grade correct through the app's real checker module.
 9. **Speech**: the pack's speech test vectors pass (also run by `npm test`).
-10. **Registry**: every id in the live site's `ids.json` is present in the new build. Retiring is fine; disappearing fails. A 404 is allowed only before the first deploy. Recovery from a failure is restoring the card from git history.
+10. **Registry**, once `cards/epoch.json` exists: every id in the live site's `ids.json` is present in the new build. Retiring is fine; disappearing fails, and so does a missing `ids.json`. Before the epoch the rule is skipped, so cards can still be restructured. Recovery from a failure is restoring the card from git history.
 
 Warnings:
 
@@ -371,7 +371,8 @@ It also prints each file's instance count and estimated seconds, and the cumulat
   - the speech vectors;
   - the Home model built from aggregates with 50,000 synthetic log rows.
 - Proposed dev-only dependencies, to be approved before M1a starts: `vitest`, `fake-indexeddb` and `ajv`. Runtime dependencies stay `ts-fsrs` and `idb`.
-- Device testing uses the deployed site over HTTPS. The LAN dev server can't exercise offline mode, storage or sharing. The installed app can be inspected from the Mac with Safari's Develop menu. Destructive tests run only in an iPad Safari tab, the Simulator or a desktop browser, never in the Home Screen app. The full device checklist runs once before the epoch.
+- Device testing uses the deployed site over HTTPS. The LAN dev server can't exercise offline mode, storage or sharing. The installed app can be inspected from the Mac with Safari's Develop menu. Destructive tests run only in an iPad Safari tab, the Simulator or a desktop browser, never in the Home Screen app. The one exception is acceptance criterion 5, the reinstall, which runs before the epoch and is followed by criterion 12.
+- The device checklist is acceptance criteria 1 to 8 and 10, plus the Safari-tab banner and the storage persistence status in Settings. It runs in full once before the epoch, and again after any change to the service worker, storage or export.
 - A verify skill, kept untracked, is the first M1 task. It wraps `npm run verify`, the scan for personal names, and the device checklist.
 
 ## Milestones
@@ -381,12 +382,14 @@ It also prints each file's instance count and estimated seconds, and the cumulat
   - Card loading. Parse and `~r` cards get no review state yet, are held out of the new queue, and enter it in normal order when M2 ships.
   - Typed and reveal answers, with folding, the wrong-form rule and punctuation handling.
   - The scheduler wrapper and day boundary.
+  - Building the session: `buildQueue` steps 1, 3, 4 and 6 (due reviews in due order, the daily cap, new cards, learn-ahead), with the new-card allowance fixed at `maxNew` until the limiter arrives.
   - Unlock on Home.
   - The log contract with single-transaction writes, and undo.
-  - Export and import.
+  - Export, import and Reset.
+  - The Safari-tab banner, `storage.persist()`, the export reminder and the clock warning.
   - The service worker and update flow, hash routing, the recovery screen, the deploy gate, and the device checklist.
 - **M1b: Session quality.**
-  - The time-budget limiter, "Learn 5 more", and the backlog and forecast lines on Home.
+  - The time-budget limiter, "Learn 5 more", the review-day advisory, and the backlog and forecast lines on Home.
   - Review ordering and sibling spacing.
   - The key bar and keyboard flow, and the display rules.
 - **M2: Full card types and tools.**
@@ -403,7 +406,7 @@ It also prints each file's instance count and estimated seconds, and the cumulat
 
 ## Acceptance criteria
 
-M1a is done when all of these hold on the iPad:
+M1a is done when all of these hold. Criteria 1 to 8 and 10 are checked on the iPad, and the last one comes last:
 
 1. A real review session runs in the Home Screen app while offline, and its progress survives closing the app and a force-quit.
 2. One deploy that adds a lesson file and edits one card's prompt: the app shows the new build id within one open-and-resume, existing review states are unchanged, the new cards appear only after unlock, and the edited card keeps its history. Retiring a card in a later deploy removes it from queues and keeps its history.
@@ -413,6 +416,10 @@ M1a is done when all of these hold on the iPad:
 6. A test build that throws during startup still exports a valid backup from the recovery screen.
 7. Undo restores the exact previous state.
 8. Precomposed vowels with macrons and combining macrons both render correctly.
+9. `npm run verify` passes in CI, and its tests cover every item in the Testing list.
+10. No parse or `~r` card appears in a session, and none has review state.
+11. The deploy job `needs` verify: one run with a deliberately failing test, made before the epoch, deployed nothing.
+12. Last: export, then Reset, and Home shows no reviews. The next review is the epoch.
 
 ## Rejected, with reasons
 
