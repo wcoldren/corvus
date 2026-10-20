@@ -380,7 +380,7 @@ It also prints each file's instance count and estimated seconds, and the cumulat
   - the markup renderer (`<b>x</b>`, `a < b`, an unmatched `*`);
   - the speech vectors;
   - the Home model built from aggregates with 50,000 synthetic log rows.
-- Proposed dev-only dependencies, to be approved before M1a starts: `vitest`, `fake-indexeddb` and `ajv`. Runtime dependencies stay `ts-fsrs` and `idb`.
+- Dev-only dependencies (approved): `vitest`, `fake-indexeddb` and `ajv`. Runtime dependencies stay `ts-fsrs` and `idb`.
 - Device testing uses the deployed site over HTTPS. The LAN dev server can't exercise offline mode, storage or sharing. The installed app can be inspected from the Mac with Safari's Develop menu. Destructive tests run only in an iPad Safari tab, the Simulator or a desktop browser, never in the Home Screen app. The one exception is acceptance criterion 5, the reinstall, which runs before the epoch and is followed by criterion 12.
 - The device checklist is acceptance criteria 1 to 8 and 10, plus the Safari-tab banner and the storage persistence status in Settings. It runs in full once before the epoch, and again after any change to the service worker, storage or export.
 - A verify skill, kept untracked, is the first M1 task. It wraps `npm run verify`, the scan for personal names, and the device checklist.
