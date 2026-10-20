@@ -123,6 +123,8 @@
       "id": "la-03-e-deus-gen-sg",
       "type": "ending",
       "lemma": "deus",
+      "paradigm": "decl2m",
+      "cell": "gen.sg",
       "prompt": "2nd decl. masc. · genitive singular of *Deus*",
       "answer": "Deī",
       "tags": [
@@ -134,6 +136,8 @@
       "id": "la-03-e-dominus-dat-sg",
       "type": "ending",
       "lemma": "dominus",
+      "paradigm": "decl2m",
+      "cell": "dat.sg",
       "prompt": "2nd decl. masc. · dative singular of *dominus*",
       "answer": "dominō",
       "tags": [
@@ -145,6 +149,8 @@
       "id": "la-03-e-agnus-acc-sg",
       "type": "ending",
       "lemma": "agnus",
+      "paradigm": "decl2m",
+      "cell": "acc.sg",
       "prompt": "2nd decl. masc. · accusative singular of *agnus*",
       "answer": "agnum",
       "tags": [
@@ -156,6 +162,8 @@
       "id": "la-03-e-servus-gen-pl",
       "type": "ending",
       "lemma": "servus",
+      "paradigm": "decl2m",
+      "cell": "gen.pl",
       "prompt": "2nd decl. masc. · genitive plural of *servus*",
       "answer": "servōrum",
       "notes": "*Servus servōrum Deī*, \"servant of the servants of God\", a papal title.",
@@ -168,6 +176,8 @@
       "id": "la-03-e-agnus-abl-pl",
       "type": "ending",
       "lemma": "agnus",
+      "paradigm": "decl2m",
+      "cell": "abl.pl",
       "prompt": "2nd decl. masc. · ablative plural of *agnus*",
       "answer": "agnīs",
       "notes": "The dative plural is the same form.",
@@ -180,6 +190,8 @@
       "id": "la-03-e-dominus-acc-pl",
       "type": "ending",
       "lemma": "dominus",
+      "paradigm": "decl2m",
+      "cell": "acc.pl",
       "prompt": "2nd decl. masc. · accusative plural of *dominus*",
       "answer": "dominōs",
       "tags": [

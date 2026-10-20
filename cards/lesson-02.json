@@ -170,6 +170,8 @@
       "id": "la-02-e-vita-gen-sg",
       "type": "ending",
       "lemma": "vīta",
+      "paradigm": "decl1",
+      "cell": "gen.sg",
       "prompt": "1st decl. · genitive singular of *vīta*",
       "answer": "vītae",
       "notes": "*Aqua vītae*, \"water of life\".",
@@ -182,6 +184,8 @@
       "id": "la-02-e-gloria-acc-sg",
       "type": "ending",
       "lemma": "glōria",
+      "paradigm": "decl1",
+      "cell": "acc.sg",
       "prompt": "1st decl. · accusative singular of *glōria*",
       "answer": "glōriam",
       "tags": [
@@ -193,6 +197,8 @@
       "id": "la-02-e-aqua-abl-sg",
       "type": "ending",
       "lemma": "aqua",
+      "paradigm": "decl1",
+      "cell": "abl.sg",
       "prompt": "1st decl. · ablative singular of *aqua*",
       "answer": "aquā",
       "tags": [
@@ -204,6 +210,8 @@
       "id": "la-02-e-anima-gen-pl",
       "type": "ending",
       "lemma": "anima",
+      "paradigm": "decl1",
+      "cell": "gen.pl",
       "prompt": "1st decl. · genitive plural of *anima*",
       "answer": "animārum",
       "tags": [
@@ -215,6 +223,8 @@
       "id": "la-02-e-ecclesia-abl-pl",
       "type": "ending",
       "lemma": "ecclēsia",
+      "paradigm": "decl1",
+      "cell": "abl.pl",
       "prompt": "1st decl. · ablative plural of *ecclēsia*",
       "answer": "ecclēsiīs",
       "notes": "The dative plural is the same form.",
@@ -227,6 +237,8 @@
       "id": "la-02-e-terra-acc-pl",
       "type": "ending",
       "lemma": "terra",
+      "paradigm": "decl1",
+      "cell": "acc.pl",
       "prompt": "1st decl. · accusative plural of *terra*",
       "answer": "terrās",
       "tags": [
