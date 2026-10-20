@@ -5,15 +5,6 @@
   "title": "The first declension and the five cases",
   "cards": [
     {
-      "id": "la-02-c-declension",
-      "type": "concept",
-      "prompt": "What is a declension?",
-      "answer": "A family of nouns that share the same set of endings.",
-      "tags": [
-        "concept"
-      ]
-    },
-    {
       "id": "la-02-c-nominative",
       "type": "concept",
       "prompt": "What job does the **nominative** case do?",
@@ -38,16 +29,6 @@
       "type": "concept",
       "prompt": "What job does the **dative** case do?",
       "answer": "\"To/for\": usually the indirect object.",
-      "tags": [
-        "concept",
-        "cases"
-      ]
-    },
-    {
-      "id": "la-02-c-accusative",
-      "type": "concept",
-      "prompt": "What job does the **accusative** case do?",
-      "answer": "The direct object (and the object of some prepositions).",
       "tags": [
         "concept",
         "cases"
@@ -183,40 +164,21 @@
       ]
     },
     {
-      "id": "la-02-e-aqua-nom-sg",
+      "id": "la-02-e-vita-gen-sg",
       "type": "ending",
-      "prompt": "1st decl. · nominative singular of *aqua*",
-      "answer": "aqua",
+      "prompt": "1st decl. · genitive singular of *vīta*",
+      "answer": "vītae",
+      "notes": "*Aqua vītae*, \"water of life\".",
       "tags": [
         "ending",
         "decl-1"
       ]
     },
     {
-      "id": "la-02-e-aqua-gen-sg",
+      "id": "la-02-e-gloria-acc-sg",
       "type": "ending",
-      "prompt": "1st decl. · genitive singular of *aqua*",
-      "answer": "aquae",
-      "tags": [
-        "ending",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-e-aqua-dat-sg",
-      "type": "ending",
-      "prompt": "1st decl. · dative singular of *aqua*",
-      "answer": "aquae",
-      "tags": [
-        "ending",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-e-aqua-acc-sg",
-      "type": "ending",
-      "prompt": "1st decl. · accusative singular of *aqua*",
-      "answer": "aquam",
+      "prompt": "1st decl. · accusative singular of *glōria*",
+      "answer": "glōriam",
       "tags": [
         "ending",
         "decl-1"
@@ -233,50 +195,31 @@
       ]
     },
     {
-      "id": "la-02-e-aqua-nom-pl",
+      "id": "la-02-e-anima-gen-pl",
       "type": "ending",
-      "prompt": "1st decl. · nominative plural of *aqua*",
-      "answer": "aquae",
+      "prompt": "1st decl. · genitive plural of *anima*",
+      "answer": "animārum",
       "tags": [
         "ending",
         "decl-1"
       ]
     },
     {
-      "id": "la-02-e-aqua-gen-pl",
+      "id": "la-02-e-ecclesia-abl-pl",
       "type": "ending",
-      "prompt": "1st decl. · genitive plural of *aqua*",
-      "answer": "aquārum",
+      "prompt": "1st decl. · ablative plural of *ecclēsia*",
+      "answer": "ecclēsiīs",
+      "notes": "The dative plural is the same form.",
       "tags": [
         "ending",
         "decl-1"
       ]
     },
     {
-      "id": "la-02-e-aqua-dat-pl",
+      "id": "la-02-e-terra-acc-pl",
       "type": "ending",
-      "prompt": "1st decl. · dative plural of *aqua*",
-      "answer": "aquīs",
-      "tags": [
-        "ending",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-e-aqua-acc-pl",
-      "type": "ending",
-      "prompt": "1st decl. · accusative plural of *aqua*",
-      "answer": "aquās",
-      "tags": [
-        "ending",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-e-aqua-abl-pl",
-      "type": "ending",
-      "prompt": "1st decl. · ablative plural of *aqua*",
-      "answer": "aquīs",
+      "prompt": "1st decl. · accusative plural of *terra*",
+      "answer": "terrās",
       "tags": [
         "ending",
         "decl-1"
@@ -298,34 +241,9 @@
       ]
     },
     {
-      "id": "la-02-x-aquarum",
+      "id": "la-02-x-terris",
       "type": "parse",
-      "prompt": "*aquārum*: every possible case and number?",
-      "answer": [
-        "gen.pl"
-      ],
-      "tags": [
-        "parse",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-x-aqua",
-      "type": "parse",
-      "prompt": "*aquā*: every possible case and number?",
-      "answer": [
-        "abl.sg"
-      ],
-      "notes": "The long ā is what separates it from nominative *aqua*.",
-      "tags": [
-        "parse",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-x-aquis",
-      "type": "parse",
-      "prompt": "*aquīs*: every possible case and number?",
+      "prompt": "*terrīs*: every possible case and number?",
       "answer": [
         "dat.pl",
         "abl.pl"
@@ -333,66 +251,6 @@
       "tags": [
         "parse",
         "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-x-aquas",
-      "type": "parse",
-      "prompt": "*aquās*: every possible case and number?",
-      "answer": [
-        "acc.pl"
-      ],
-      "tags": [
-        "parse",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-x-terram",
-      "type": "parse",
-      "prompt": "*terram*: every possible case and number?",
-      "answer": [
-        "acc.sg"
-      ],
-      "tags": [
-        "parse",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-x-vitarum",
-      "type": "parse",
-      "prompt": "*vītārum*: every possible case and number?",
-      "answer": [
-        "gen.pl"
-      ],
-      "tags": [
-        "parse",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-x-ecclesiis",
-      "type": "parse",
-      "prompt": "*ecclēsiīs*: every possible case and number?",
-      "answer": [
-        "dat.pl",
-        "abl.pl"
-      ],
-      "tags": [
-        "parse",
-        "decl-1"
-      ]
-    },
-    {
-      "id": "la-02-p-aqua-regia",
-      "type": "phrase",
-      "prompt": "aqua rēgia",
-      "answer": "royal water",
-      "notes": "HNO₃ + HCl, the mixture that dissolves gold (*aurum*).",
-      "tags": [
-        "phrase",
-        "chemistry"
       ]
     },
     {
@@ -401,15 +259,6 @@
       "prompt": "Glōria in excelsīs Deō.",
       "answer": "Glory to God in the highest.",
       "notes": "*Glōria* is nominative (the subject); *Deō* is dative, \"to God\".",
-      "tags": [
-        "phrase"
-      ]
-    },
-    {
-      "id": "la-02-p-ecclesia-animam-amat",
-      "type": "phrase",
-      "prompt": "Ecclēsia animam amat.",
-      "answer": "The Church loves the soul.",
       "tags": [
         "phrase"
       ]
