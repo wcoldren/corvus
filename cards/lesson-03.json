@@ -217,6 +217,26 @@
       ]
     },
     {
+      "id": "la-03-h-hominem",
+      "type": "ending",
+      "prompt": "*hominem*: dictionary headword?",
+      "answer": "homō",
+      "notes": "*homō, hominis, m.* The stem *homin-* comes from the genitive, so dropping -em does not give the headword.",
+      "tags": [
+        "headword"
+      ]
+    },
+    {
+      "id": "la-03-h-verba",
+      "type": "ending",
+      "prompt": "*verba*: dictionary headword?",
+      "answer": "verbum",
+      "notes": "*verbum, verbī, n.* Neuter plurals end in -a, so this is not a 1st-declension *verba*.",
+      "tags": [
+        "headword"
+      ]
+    },
+    {
       "id": "la-03-p-agnus-dei",
       "type": "phrase",
       "prompt": "Agnus Deī",
