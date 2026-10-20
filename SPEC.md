@@ -2,7 +2,7 @@
 
 ## Goal
 
-A daily review app that makes Latin vocabulary, endings and grammar stick using spaced repetition. Misses come back soon, while correct answers get pushed out to days, weeks and months. It opens from the iPad Home Screen, works offline, and takes about 10 minutes a day.
+A daily review app that makes Latin vocabulary, endings and grammar stick using spaced repetition. Misses come back soon, while correct answers get pushed out to days, weeks and months. It opens from the iPad Home Screen, works offline, and takes about 20 minutes a day, rarely more than 30.
 
 The code knows nothing about Latin. Everything language-specific lives in data: the card files and the language pack (`languages/la.json`). Latin appears in this spec only as examples.
 
@@ -46,30 +46,32 @@ The code knows nothing about Latin. Everything language-specific lives in data: 
 
 ## Workload budget
 
-The budget is set by the daily time, not by how much material there is. The operating point is **about 10 minutes a day**, which yields **about 650 lemmas by Lesson 80** at one lesson a day.
+The budget is set by the daily time, not by how much material there is. The operating point is **a 20-minute daily goal, with 30 minutes as a soft ceiling** that a normal day stays under. At one lesson every 1.5 days, that yields **about 1,100 lemmas by Lesson 80**, or nearer 900 if review and reading lessons add none.
 
-The numbers behind that, simulated with FSRS-6 default weights at retention 0.9:
+The numbers behind that, simulated day by day with FSRS-6 default weights at retention 0.9, the scheduler config below, the new-card allowance below, and the per-lesson budget in the table:
 
+- Over the first 120 days: about 18 min/day on average, 22 on the busiest twentieth of days, and about 26 at most. Over a year the average falls to about 11, since cards learned early come up rarely.
+- With a missed day about one day in ten, the day after a miss is the worst day: about 28 to 29 min at most, with the daily cap below holding it under 30.
+- The cards keep pace with the course. Lesson 80 unlocks on day 119 and its last card is introduced around day 127 (around day 137 with missed days).
+- If answering is 25 percent slower than assumed, the allowance holds the average near 20 by introducing new cards more slowly: the last card enters around day 153, and the worst days after a miss reach the mid-30s. At 25 percent faster, the average is about 14 and nothing waits.
 - The cards as first written (about 40 instances a lesson, 10 new a day) cost about 18 min/day, left 1,965 cards waiting at day 120 (about 50 lessons behind), and introduced the last card around day 316. Taking each lesson's cards whole instead cost about 46 min/day, with 73-minute peaks.
-- At about 12 instances a lesson: about 9.7 min/day at retention 0.85, about 11.5 at 0.90. At 15 instances: about 14.1 at 0.90.
-- About 1,000 lemmas by Lesson 80 would take about 14 to 15 min/day.
-- These used placeholder answer times. Rerun them after 30 days of logged review times, and raise the vocabulary target then if there is room.
+- These used placeholder answer times (reveal 8 s, grid 12 s, typed 15 s, plus 10 s for a miss and 6 s for a new card's first showing), and they assume the model's predicted recall is the true recall. Rerun them after 30 days of logged review times.
 
 **Per-lesson budget**, by type, protecting cheap forward vocabulary:
 
 | Kind | Per lesson |
 | --- | --- |
-| New lemmas (forward vocab) | about 7 to 8 |
-| Reverse cards | at most 2 |
-| Ending, parse, headword and cloze | at most 2 to 3 |
+| New lemmas (forward vocab) | about 13 to 14 |
+| Reverse cards | at most 3 |
+| Ending, parse, headword and cloze | at most 4 |
 | Concept and phrase | at most 1 to 2 |
-| Total instances, counting `~r` | about 12 to 14 |
+| Total instances, counting `~r` | about 20 to 22 |
 
-An instance is one schedulable card, so a vocab card with `reverse` counts twice. check-cards also estimates each file's first-pass cost in seconds (reveal 8 s, grid 12 s, typed 15 s, until logged medians replace them) and warns above 160 s. When a lesson has more to say, cut reverse cards and paradigm cells, never lemmas.
+An instance is one schedulable card, so a vocab card with `reverse` counts twice. check-cards also estimates each file's first-pass cost in seconds (reveal 8 s, grid 12 s, typed 15 s, until logged means replace them) and warns above 240 s. When a lesson has more to say, cut reverse cards and paradigm cells, never lemmas.
 
-Lessons 1 to 3 were written before this budget and hold 17, 25 and 24 instances. The new-card limiter spreads them out.
+Lessons 1 to 3 were written before this budget and hold 17, 25 and 24 instances. Lessons 2 and 3 are slightly over, and the new-card allowance spreads them out.
 
-The main workload levers are the card budget, the learning steps and the time-budget limiter. Desired retention is a minor one: 0.85 saves roughly 10 to 15 percent of reviews and costs more forgetting.
+The main workload levers are the card budget, the learning steps and the new-card allowance. Desired retention is a minor one: 0.85 saves roughly 10 to 15 percent of reviews and costs more forgetting.
 
 ## Card history epoch
 
@@ -117,7 +119,7 @@ A pure function, `buildQueue(cards, states, log, settings, now)`, so it can be u
 
 1. **Reviews due**: every review-state card due before the next rollover. Learning and relearning cards use their exact due times instead.
 2. **Order**: ascending retrievability at session start, computed through the wrapper. Ties, which are common, are broken by a shuffle seeded from the study day, so a lesson's cards never come back as a recited sequence.
-3. **Daily cap**: at most 150 reviews from earlier days per study day, counted from the log. The rest carry over. New cards and same-day steps don't count toward it.
+3. **Daily cap**: at most 120 reviews from earlier days per study day, counted from the log. The rest carry over. The cap is what keeps the day after a missed day under the 30-minute ceiling. New cards and same-day steps don't count toward it.
 4. **New cards**: today's allowance (below) is interleaved, one new card after every 4 reviews, so a heavy review day still introduces some.
 5. **Spacing**: cards with the same lemma are never shown back to back, and a card that just failed comes back no sooner than 3 cards later.
 6. **Learn-ahead**: when nothing else is due, learning cards due within the next 20 minutes (Settings) are shown early, in due order. The session ends when none remain. Learning cards still pending carry over and come first next session.
@@ -128,10 +130,10 @@ A pure function, `buildQueue(cards, states, log, settings, now)`, so it can be u
 newToday = min(maxNew, floor((goalSec − dueToday × secPerReview) / secPerNew)) − newAlreadyToday
 ```
 
-- `goalSec` is the daily goal (Settings, default 10 minutes).
-- `secPerReview` is the median logged `totalMs` over the last 500 reviews, each capped at 60 s; 12 s until there is data.
+- `goalSec` is the daily goal (Settings, default 20 minutes).
+- `secPerReview` is the mean logged `totalMs` over the last 500 reviews, each capped at 60 s; 12 s until there is data. It is the mean, not the median: the median lands on the cheapest card type, and in simulation it overshot a 15-minute goal by 3 to 5 minutes a day.
 - `secPerNew` is 1.4 × `secPerReview` + 6 s.
-- `maxNew` is a ceiling (Settings, default 15), not the usual limit.
+- `maxNew` is a ceiling (Settings, default 25), not the usual limit.
 - A negative result is 0, so new cards pause by themselves when reviews fill the day.
 
 After a session ends with new cards still waiting, "Learn 5 more" introduces five more. It can be repeated, and the cards are logged like any others, so tomorrow's allowance accounts for them.
@@ -161,7 +163,7 @@ The suggestion is never Easy, and using the hint caps it at Hard. The learner ca
 ## Screens
 
 1. **Home**
-   - "Due today: N · about M min", from the logged medians.
+   - "Due today: N · about M min", from the logged means.
    - "New today: K", and "Waiting: X cards from Lessons A to B (about D days at this pace)".
    - The unlock button, and "Start review".
    - Advisories, one line each: a review day is suggested when the waiting cards exceed one lesson's budget or tomorrow's forecast exceeds the goal; an export reminder after 7 days without one; the Safari-tab banner; the clock warning.
@@ -417,9 +419,9 @@ M1a is done when all of these hold on the iPad:
 Listed so later sessions don't propose them again:
 
 - **Fading macrons on mature cards**: under a fixed id it changes what the card tests. Unmarked reading is practised with plain-text cards under new ids.
-- **A practice mode** that reviews without scheduling: it splits attention from the daily queue for one learner with a 10-minute budget.
+- **A practice mode** that reviews without scheduling: it splits attention from the daily queue for one learner with a fixed daily budget.
 - **An in-browser optimizer**: too heavy for a static site. A Mac-side script on an export does the same job (M3).
-- **A core vocabulary deck before Lesson 80**: it would compete with the lessons for the same 10 minutes. The DCC Latin Core list guides which words the lessons choose instead.
+- **A core vocabulary deck before Lesson 80**: it would compete with the lessons for the same daily minutes. The DCC Latin Core list guides which words the lessons choose instead.
 - **A runtime morphology engine**: the cards hold the forms, and the grids and paradigms are data.
 - **A separate cloze type**: `ending` cards tagged `cloze` do the job without a schema change.
 - **Lemmatizing running text word by word**: not until the readiness meter needs it.
