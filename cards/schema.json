@@ -39,7 +39,7 @@
         },
         "type": { "enum": ["vocab", "concept", "ending", "parse", "phrase"] },
         "lemma": {
-          "description": "The dictionary headword the card is about, lowercase with its marks (e.g. 'aqua', 'amō' for amat). Cards that share a lemma are siblings. It is also the answer of the reverse card.",
+          "description": "The dictionary headword the card is about, spelled as the dictionary prints it, with its marks (e.g. 'aqua', 'amō' for amat). Compared after normalization, so case doesn't matter. Cards that share a lemma are siblings. It is also the answer of the reverse card.",
           "type": "string",
           "minLength": 1
         },

@@ -39,6 +39,7 @@
     "decl2n": { "label": "2nd declension, neuter -um", "grid": "case5" }
   },
   "inputKeys": ["ā", "ē", "ī", "ō", "ū"],
+  "inputHelp": "Tap a key in the bar above the answer to type ā ē ī ō ū. A missing macron counts only as a slip, unless it turns the word into a different form.",
   "speech": {
     "lang": "it-IT",
     "rules": [
@@ -70,7 +71,10 @@
       { "text": "Jēsus", "spoken": "iesus" }
     ]
   },
-  "ignoreWords": ["the", "a", "an", "to"],
+  "learner": {
+    "lang": "en",
+    "ignoreWords": ["the", "a", "an", "to"]
+  },
   "spellingVariants": {
     "letters": [
       { "variant": "æ", "standard": "ae" },

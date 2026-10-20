@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://corvus.local/languages/schema.json",
   "title": "Corvus language pack",
-  "description": "Everything the app knows about one target language. The code reads this file instead of assuming a language; the file is named after the code, e.g. la.json.",
+  "description": "Everything the app knows about one target language, and the learner's language it is taught from. The code reads this file instead of assuming either; the file is named after the target language's code, e.g. la.json.",
   "type": "object",
-  "required": ["code", "name", "grids", "defaultGrid", "paradigms", "inputKeys", "speech", "ignoreWords", "spellingVariants"],
+  "required": ["code", "name", "grids", "defaultGrid", "paradigms", "inputKeys", "speech", "learner", "spellingVariants"],
   "additionalProperties": false,
   "properties": {
     "code": {
@@ -14,7 +14,7 @@
     },
     "name": { "type": "string", "minLength": 1 },
     "grids": {
-      "description": "Named parse grids, keyed by id. A cell id is '<row id>.<col id>', so a grid's cells are every row crossed with every column.",
+      "description": "Named parse grids, keyed by id. A cell id is '<row id>.<col id>', so a grid's cells are every row crossed with every column. Row ids have no dots, so the first dot in a cell id always ends the row id.",
       "type": "object",
       "additionalProperties": { "$ref": "#/$defs/grid" }
     },
@@ -42,6 +42,11 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": { "type": "string", "minLength": 1 }
+    },
+    "inputHelp": {
+      "description": "Plain text shown in Settings on how to type the target language's marks.",
+      "type": "string",
+      "minLength": 1
     },
     "speech": {
       "type": "object",
@@ -83,11 +88,24 @@
         }
       }
     },
-    "ignoreWords": {
-      "description": "Words in the learner's own language that may be added or left out of a typed meaning without changing it (articles, the 'to' of an infinitive). Compared lowercased, as whole words.",
-      "type": "array",
-      "uniqueItems": true,
-      "items": { "type": "string", "minLength": 1 }
+    "learner": {
+      "description": "The learner's own language: the language of meanings, concept questions and notes.",
+      "type": "object",
+      "required": ["lang", "ignoreWords"],
+      "additionalProperties": false,
+      "properties": {
+        "lang": {
+          "description": "BCP-47 code, used for the lang attribute of text and inputs in this language.",
+          "type": "string",
+          "minLength": 2
+        },
+        "ignoreWords": {
+          "description": "Words that may be added or left out of a typed meaning without changing it (articles, the 'to' of an infinitive). Compared lowercased, as whole words.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
     },
     "spellingVariants": {
       "description": "Spellings that printed texts use and the cards avoid. check-cards warns when card text in the target language contains a variant. Answer checking does not use these; the variants are taught in notes, for reading.",
@@ -117,7 +135,7 @@
         "additionalProperties": false,
         "properties": {
           "id": {
-            "description": "Lowercase letters and digits; may be dot-joined (e.g. 'sg.m') when one axis combines two features.",
+            "description": "Lowercase letters and digits. A column id may be dot-joined (e.g. 'sg.m') when the axis combines two features; a row id may not.",
             "type": "string",
             "pattern": "^[a-z0-9]+(\\.[a-z0-9]+)*$"
           },
@@ -131,7 +149,10 @@
       "additionalProperties": false,
       "properties": {
         "label": { "type": "string", "minLength": 1 },
-        "rows": { "$ref": "#/$defs/axis" },
+        "rows": {
+          "$ref": "#/$defs/axis",
+          "items": { "properties": { "id": { "pattern": "^[a-z0-9]+$" } } }
+        },
         "cols": { "$ref": "#/$defs/axis" }
       }
     },

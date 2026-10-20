@@ -15,7 +15,7 @@ The code knows nothing about Latin. Everything language-specific lives in data: 
 ## Core concepts
 
 - **Card file**: `cards/lesson-NN.json`, one per lesson, validated by `cards/schema.json`. Only files matching `cards/lesson-*.json` are card files; the build and check-cards use the same glob. `lesson` is the number of the lesson chat that wrote the file and is the unlock key. `unit` is the syllabus unit, used by quizzes and later by the game.
-- **Language pack**: `languages/<code>.json`, validated by `languages/schema.json`. It holds the parse grids, paradigms, the on-screen key bar, speech respelling with test vectors, the words ignored in typed meanings, and printed spelling variants. One deployment teaches one target language, but stored state is keyed by language code so a second one would not collide.
+- **Language pack**: `languages/<code>.json`, validated by `languages/schema.json`. It holds the parse grids, paradigms, the on-screen key bar and its help text, speech respelling with test vectors, the learner's own language (its code and the words ignored in typed meanings), and printed spelling variants. One deployment teaches one target language, but stored state is keyed by language code so a second one would not collide.
 - **Card**: one prompt and its answer. Its `id` is permanent: review history is keyed by it (see Card history epoch).
 - **Lemma**: the dictionary headword a card is about (`amō` for a card on *amat*). Cards that share a lemma are siblings. The lemma is also the answer of the reverse card.
 - **Reverse card**: a vocab card with `reverse` set also yields a card with id `<id>~r` that runs the other way (see Card types).
@@ -40,6 +40,17 @@ The code knows nothing about Latin. Everything language-specific lives in data: 
 - **Parse grids** come from the language pack. A card names one with `grid`, or gets the pack's `defaultGrid`. The UI labels the grid from its row and column labels, which is why parse prompts are the bare form. The learner taps every cell that applies; the answer is right only when the set of tapped cells equals `answer` exactly.
 - **Headword cards** are `ending` cards tagged `headword`: a form in the prompt (*hominis*), the lemma as the typed answer (*homō*). They train the skill of reading with a dictionary.
 - **Cloze cards** are `ending` cards tagged `cloze`, with exactly one `___` in the prompt and the lemma in parentheses ("Glōria in excelsīs ___. (Deus)" → *Deō*).
+- **Which language each field is in.** The app needs this for the input's `lang`, the key bar, text size and check-cards' variant warning:
+
+  | type | Target language | Learner's language |
+  | --- | --- | --- |
+  | `vocab` | `prompt`, `lemma`, `reverse.accept` | `answer`, `accept`, `reverse.hint` |
+  | `concept` | | `prompt`, `answer` |
+  | `ending` | `answer`, `accept`, `lemma`; the `prompt` of a cloze card | `prompt` |
+  | `parse` | `prompt`, `lemma` | |
+  | `phrase` | `prompt` | `answer` |
+
+  `notes` and `hint` are in the learner's language. In any field in the learner's language, `*italic*` spans count as target-language text (the form in "genitive plural of *anima*"), so card files keep italics for target-language words.
 - `hint` is behind a Hint button. Using it is logged and caps the suggested rating at Hard.
 - `notes` are shown after answering.
 - A retired card leaves every queue and count. Its history stays and still exports.
@@ -149,7 +160,7 @@ Undo reverses the most recent answer and can be repeated back to the start of th
 
 ## Answer checking (typed)
 
-1. **Normalize** both sides: Unicode NFC, trim, lowercase, collapse spaces, and strip punctuation (every Unicode `P` character except a hyphen or apostrophe inside a word). When the expected answer is in the learner's own language (a typed meaning), whole words from the pack's `ignoreWords` are dropped from both sides.
+1. **Normalize** both sides: Unicode NFC, trim, lowercase, collapse spaces, and strip punctuation (every Unicode `P` character except a hyphen or apostrophe inside a word). When the expected answer is in the learner's own language (a typed meaning), whole words from the pack's `learner.ignoreWords` are dropped from both sides.
 2. **Alternatives**: in `answer` and `accept`, a word joined by `/` lists alternatives for that slot. "he/she/it loves" accepts "he loves", "she loves" and "it loves".
 3. **Exact match** with any expected answer: **correct**, suggest Good.
 4. **Match only after folding marks** (NFD, remove every `\p{M}` character, NFC):
@@ -183,8 +194,8 @@ Leeches (M2): a card whose lapses reach a threshold (default 6) is marked a leec
 
 ## Input and display
 
-- Typed answers use `<input>` inside a `<form>`, with `lang` set to the language of the expected answer and `autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" enterkeyhint="go"`. The input font is at least 18 px.
-- A key bar above the input, on cards whose answer is in the target language, holds the pack's `inputKeys`. Its buttons insert at the caret with `setRangeText` and use `pointerdown` plus `preventDefault`, so the field keeps focus and the keyboard stays up. Settings explains how to type marks on a hardware keyboard.
+- Typed answers use `<input>` inside a `<form>`, with `lang` set to the language of the expected answer (the pack's `code` or `learner.lang`) and `autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" enterkeyhint="go"`. The input font is at least 18 px.
+- A key bar above the input, on cards whose answer is in the target language, holds the pack's `inputKeys`. Its buttons insert at the caret with `setRangeText` and use `pointerdown` plus `preventDefault`, so the field keeps focus and the keyboard stays up. Settings shows the pack's `inputHelp` on typing marks.
 - **Keys**: Enter checks the answer, and Enter again accepts the suggested rating. When the input isn't taking text, 1 to 4 rate and Space reveals. The next card's input is focused synchronously inside the rating handler.
 - The review screen is laid out top-down within the height reported by `visualViewport`, so nothing sits behind the on-screen keyboard. It works in narrow Split View and Slide Over widths, and pads for the safe areas.
 - Target-language text is at least 28 px, body text at least 18 px, sized in rem, with a text-size setting. Light and dark themes follow the system. Highlights use underline or weight as well as colour, text contrast is at least 4.5:1, and every tap target is at least 44 px, with a visible selected state on grid cells.
@@ -275,7 +286,7 @@ The database version only goes up, through one migration per step, each with a t
 
 ### Build and identity
 
-- Card files and language packs are bundled at build time with `import.meta.glob('/cards/lesson-*.json', { eager: true })` (and the same for `languages/`). A static site can't list a directory at runtime, and bundling puts the cards inside the precache. The build also writes `ids.json`, every card id including `~r` ids, for check-cards rule 10.
+- Card files and language packs are bundled at build time with `import.meta.glob('/cards/lesson-*.json', { eager: true })`, and packs with `import.meta.glob(['/languages/*.json', '!/languages/schema.json'], { eager: true })`. A static site can't list a directory at runtime, and bundling puts the cards inside the precache. The build also writes `ids.json`, every card id including `~r` ids, for check-cards rule 10.
 - Vite `base` is `/corvus/`, and every URL is built from `import.meta.env.BASE_URL`.
 - Manifest: `id`, `start_url` and `scope` all `/corvus/`, `display: standalone`, name and short_name "Corvus", and a simple, original raven icon (a 180 px apple-touch icon, 192 and 512 px icons, and a maskable one). The viewport meta includes `viewport-fit=cover`.
 - The base path, the manifest identity and the icon are frozen before the first install. Whether to use a custom domain is decided before the epoch. After that the origin is as permanent as the card ids, and moving it takes an export and an import.

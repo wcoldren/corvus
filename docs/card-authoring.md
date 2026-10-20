@@ -143,7 +143,7 @@ An `ending` card tagged `cloze`: a sentence with exactly one `___`, and the lemm
 ```json
 { "id": "la-04-z-gloria-deo", "type": "ending", "lemma": "deus",
   "prompt": "Glōria in excelsīs ___. (Deus)", "answer": "Deō",
-  "notes": "Dative: glory *to* God.", "tags": ["cloze"] }
+  "notes": "Dative: glory 'to' God.", "tags": ["cloze"] }
 ```
 
 Take the sentence from the story or a milestone text, and blank an ending that has already been taught. Say why that case in `notes`. Prefer Vulgate and Seneca sentences to prayers learned by heart, where the answer comes from memory rather than grammar.
@@ -154,7 +154,7 @@ Take the sentence from the story or a milestone text, and blank an ending that h
 - **Spelling**: *ae* and *oe*, not *æ* and *œ*; *i*, not *j*; no stress accents. Use *caelum*, not *coelum*. check-cards warns on any spelling variant listed in `languages/la.json`.
 - **Liturgical spellings stay as printed** in the prayers the course reads: *quotīdiānum* and *tentātiōnem* in the *Pater Noster*, not the classical *cottīdiānum* and *temptātiōnem*. Cards quoting or teaching those words use the liturgical form, and `notes` gives the classical one.
 - **strictMarks**: set `"strictMarks": true` on a typed card whose answer, written without its macrons, would be a different real form that no card has yet (*vēnit* and *venit*, *manūs* and *manus*). The app already catches clashes with forms the cards do have.
-- **Markup**: `*italic*` and `**bold**` only, in prompts, notes and self-graded answers. A typed answer and its `accept` entries are plain text.
+- **Markup**: `*italic*` and `**bold**` only, in prompts, notes and self-graded answers. A typed answer and its `accept` entries are plain text. In English text, italics mean Latin: the app reads an italic span as Latin, so put English words in quotes rather than italics ("root of 'animate'").
 - **Tags** name topics: `decl-1`, `cases`, `neuter`, `chemistry`. `headword` and `cloze` are tags the app reads. A tag that repeats the card's type adds nothing; leave it off new cards.
 - **No personal names** of real people other than authors and figures in the texts. Card files are public.
 - `hint` sits behind a button and caps the rating at Hard. Use it rarely.
