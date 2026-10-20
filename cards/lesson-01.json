@@ -77,7 +77,6 @@
       "type": "vocab",
       "prompt": "amat",
       "answer": "he/she/it loves",
-      "reverse": true,
       "accept": [
         "loves",
         "he loves",
@@ -93,7 +92,6 @@
       "type": "vocab",
       "prompt": "et",
       "answer": "and",
-      "reverse": true,
       "tags": [
         "vocab"
       ]
@@ -103,7 +101,6 @@
       "type": "vocab",
       "prompt": "ōrā",
       "answer": "pray!",
-      "reverse": true,
       "accept": [
         "pray"
       ],
@@ -117,7 +114,6 @@
       "type": "vocab",
       "prompt": "labōrā",
       "answer": "work!",
-      "reverse": true,
       "accept": [
         "work",
         "labor"
@@ -132,7 +128,6 @@
       "type": "vocab",
       "prompt": "ferrum, ferrī, n.",
       "answer": "iron",
-      "reverse": true,
       "notes": "Fe. Stem *ferr-* → ferrous, ferric.",
       "tags": [
         "vocab",
@@ -145,7 +140,6 @@
       "type": "vocab",
       "prompt": "aurum, aurī, n.",
       "answer": "gold",
-      "reverse": true,
       "notes": "Au. Stem *aur-* → auric.",
       "tags": [
         "vocab",
@@ -158,7 +152,6 @@
       "type": "vocab",
       "prompt": "argentum, argentī, n.",
       "answer": "silver",
-      "reverse": true,
       "notes": "Ag. Also gave Argentina its name.",
       "tags": [
         "vocab",
@@ -171,7 +164,6 @@
       "type": "vocab",
       "prompt": "plumbum, plumbī, n.",
       "answer": "lead",
-      "reverse": true,
       "notes": "Pb. Stem *plumb-* → plumber, plumb line.",
       "tags": [
         "vocab",
@@ -184,7 +176,6 @@
       "type": "vocab",
       "prompt": "cuprum, cuprī, n.",
       "answer": "copper",
-      "reverse": true,
       "notes": "Cu. Stem *cupr-* → cuprous, cupric. Late Latin, from *Cyprium aes*, \"Cyprian metal\".",
       "tags": [
         "vocab",

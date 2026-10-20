@@ -60,7 +60,6 @@
       "type": "vocab",
       "prompt": "aqua, aquae, f.",
       "answer": "water",
-      "reverse": true,
       "notes": "AH-kwah. *Aqua rēgia*, *aqua vītae*.",
       "tags": [
         "vocab",
@@ -72,7 +71,6 @@
       "type": "vocab",
       "prompt": "anima, animae, f.",
       "answer": "soul",
-      "reverse": true,
       "accept": [
         "spirit",
         "life",
@@ -100,7 +98,6 @@
       "type": "vocab",
       "prompt": "vīta, vītae, f.",
       "answer": "life",
-      "reverse": true,
       "notes": "VEE-tah; *vital*, *vitamin*.",
       "tags": [
         "vocab",
@@ -127,7 +124,6 @@
       "type": "vocab",
       "prompt": "ecclēsia, ecclēsiae, f.",
       "answer": "church",
-      "reverse": true,
       "notes": "ek-KLEH-zee-ah.",
       "tags": [
         "vocab",
@@ -139,7 +135,6 @@
       "type": "vocab",
       "prompt": "est",
       "answer": "is",
-      "reverse": true,
       "accept": [
         "he is",
         "she is",
@@ -155,7 +150,6 @@
       "type": "vocab",
       "prompt": "sunt",
       "answer": "are",
-      "reverse": true,
       "accept": [
         "they are",
         "there are"

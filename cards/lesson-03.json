@@ -56,7 +56,6 @@
       "type": "vocab",
       "prompt": "servus, servī, m.",
       "answer": "servant",
-      "reverse": true,
       "accept": [
         "slave"
       ],
@@ -70,7 +69,6 @@
       "type": "vocab",
       "prompt": "agnus, agnī, m.",
       "answer": "lamb",
-      "reverse": true,
       "notes": "AH-nyoos: Ecclesiastical *gn* = \"ny\", as in canyon.",
       "tags": [
         "vocab",
@@ -82,7 +80,6 @@
       "type": "vocab",
       "prompt": "verbum, verbī, n.",
       "answer": "word",
-      "reverse": true,
       "tags": [
         "vocab",
         "decl-2"
@@ -108,7 +105,6 @@
       "type": "vocab",
       "prompt": "amant",
       "answer": "they love",
-      "reverse": true,
       "accept": [
         "love"
       ],
