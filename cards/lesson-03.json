@@ -82,13 +82,13 @@
       "id": "la-03-v-caelum",
       "type": "vocab",
       "lemma": "caelum",
-      "prompt": "caelum, caelī, n. (pl. caelī, m.)",
+      "prompt": "caelum, caelī, n.",
       "answer": "heaven",
       "reverse": true,
       "accept": [
         "sky"
       ],
-      "notes": "CHEH-loom: *c* before *ae* is \"ch\". Neuter in the singular, masculine in the plural: caelī, caelōrum, caelīs, caelōs. *Caelī ēnārrant glōriam Deī* (Ps 18:2).",
+      "notes": "CHEH-loom: *c* before *ae* is \"ch\". Neuter in the singular, masculine in the plural: *caelī, caelōrum, caelīs, caelōs*. *Caelī ēnārrant glōriam Deī* (Ps 18:2).",
       "tags": [
         "vocab",
         "decl-2"
@@ -144,7 +144,7 @@
         "gen.sg",
         "nom.pl"
       ],
-      "notes": "Neuter in the singular, masculine in the plural: caelī, caelōrum, caelīs, caelōs. *Caelī ēnārrant glōriam Deī* (Ps 18:2).",
+      "notes": "Neuter in the singular, masculine in the plural: *caelī, caelōrum, caelīs, caelōs*. *Caelī ēnārrant glōriam Deī* (Ps 18:2).",
       "tags": [
         "parse",
         "decl-2"

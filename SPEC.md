@@ -39,7 +39,7 @@ The code knows nothing about Latin. Everything language-specific lives in data: 
 - **Reverse cards** are made only for words worth producing (see `docs/card-authoring.md`). The prompt is the forward card's answer, so "life" with the hint "not *anima*". The expected answer is the lemma alone, not the whole dictionary entry; feedback then shows the full forward prompt, so the genitive and gender are seen every time. `reverse.retired` hides the reverse card only. Retiring the forward card retires both.
 - **Parse grids** come from the language pack. A card names one with `grid`, or gets the pack's `defaultGrid`. The UI labels the grid from its row and column labels, which is why parse prompts are the bare form. The learner taps every cell that applies; the answer is right only when the set of tapped cells equals `answer` exactly.
 - **Headword cards** are `ending` cards tagged `headword`: a form in the prompt (*hominis*), the lemma as the typed answer (*homō*). They train the skill of reading with a dictionary.
-- **Cloze cards** are `ending` cards tagged `cloze`, with exactly one `___` in the prompt and the lemma in parentheses ("Glōria in excelsīs ___. (Deus)" → *Deō*).
+- **Cloze cards** are `ending` cards tagged `cloze`, with exactly one `___` in the prompt and the lemma in parentheses ("In prīncipiō creāvit Deus caelum et ___. (terra)" → *terram*).
 - **Which language each field is in.** The app needs this for the input's `lang`, the key bar, text size and check-cards' variant warning:
 
   | type | Target language | Learner's language |
@@ -52,18 +52,18 @@ The code knows nothing about Latin. Everything language-specific lives in data: 
 
   `notes` and `hint` are in the learner's language. In any field in the learner's language, `*italic*` spans count as target-language text (the form in "genitive plural of *anima*"), so card files keep italics for target-language words.
 - `hint` is behind a Hint button. Using it is logged and caps the suggested rating at Hard.
-- `notes` are shown after answering.
+- `notes` are shown after answering. On a reveal card, `accept` entries are shown under the answer as "also: …".
 - A retired card leaves every queue and count. Its history stays and still exports.
 
 ## Workload budget
 
-The budget is set by the daily time, not by how much material there is. The operating point is **a 20-minute daily goal, with 30 minutes as a soft ceiling** that a normal day stays under. At one lesson every 1.5 days, that yields **about 1,100 lemmas by Lesson 80**, or nearer 900 if review and reading lessons add none.
+The budget is set by the daily time, not by how much material there is. The operating point is **a 20-minute daily goal, with 30 minutes as a soft ceiling** that a normal day stays under. At one lesson every 1.5 days, that yields **about 1,100 lemmas by the end of the syllabus**, or nearer 900 if review and reading lessons add none. Lesson counts in this section are the syllabus's 80 rows. The first chats each covered several rows, so chat numbers run behind row numbers.
 
 The numbers behind that, simulated day by day with FSRS-6 default weights at retention 0.9, the scheduler config below, the new-card allowance below, and the per-lesson budget in the table:
 
 - Over the first 120 days: about 18 min/day on average, 22 on the busiest twentieth of days, and about 26 at most. Over a year the average falls to about 11, since cards learned early come up rarely.
 - With a missed day about one day in ten, the day after a miss is the worst day: about 28 to 29 min at most, with the daily cap below holding it under 30.
-- The cards keep pace with the course. Lesson 80 unlocks on day 119 and its last card is introduced around day 127 (around day 137 with missed days).
+- The cards keep pace with the course. The 80th lesson unlocks on day 119 and its last card is introduced around day 127 (around day 137 with missed days).
 - If answering is 25 percent slower than assumed, the allowance holds the average near 20 by introducing new cards more slowly: the last card enters around day 153, and the worst days after a miss reach the mid-30s. At 25 percent faster, the average is about 14 and nothing waits.
 - The cards as first written (about 40 instances a lesson, 10 new a day) cost about 18 min/day, left 1,965 cards waiting at day 120 (about 50 lessons behind), and introduced the last card around day 316. Taking each lesson's cards whole instead cost about 46 min/day, with 73-minute peaks.
 - These used placeholder answer times (reveal 8 s, grid 12 s, typed 15 s, plus 10 s for a miss and 6 s for a new card's first showing), and they assume the model's predicted recall is the true recall. Rerun them after 30 days of logged review times.
@@ -142,7 +142,7 @@ newToday = min(maxNew, floor((goalSec − dueToday × secPerReview) / secPerNew)
 ```
 
 - `goalSec` is the daily goal (Settings, default 20 minutes).
-- `secPerReview` is the mean logged `totalMs` over the last 500 reviews, each capped at 60 s; 12 s until there is data. It is the mean, not the median: the median lands on the cheapest card type, and in simulation it overshot a 15-minute goal by 3 to 5 minutes a day.
+- `secPerReview` is the mean logged `totalMs` over the last 500 reviews, each capped at 60 s; 12 s until there is data. It is the mean, not the median: the median lands on the cheapest card type, and in a simulation run at a 15-minute goal it overshot by 3 to 5 minutes a day.
 - `secPerNew` is 1.4 × `secPerReview` + 6 s.
 - `maxNew` is a ceiling (Settings, default 25), not the usual limit.
 - A negative result is 0, so new cards pause by themselves when reviews fill the day.
@@ -358,7 +358,6 @@ Failures:
 Warnings:
 
 - A lesson over budget, in instances or estimated seconds.
-- Two corpus answers that differ only in marks, where neither card has `strictMarks`.
 - Target-language card text containing one of the pack's spelling variants.
 - A `cloze` card without exactly one `___`.
 - An `accept` entry equal to another card's answer.
@@ -439,7 +438,7 @@ Listed so later sessions don't propose them again:
 - **Fading macrons on mature cards**: under a fixed id it changes what the card tests. Unmarked reading is practised with plain-text cards under new ids.
 - **A practice mode** that reviews without scheduling: it splits attention from the daily queue for one learner with a fixed daily budget.
 - **An in-browser optimizer**: too heavy for a static site. A Mac-side script on an export does the same job (M3).
-- **A core vocabulary deck before Lesson 80**: it would compete with the lessons for the same daily minutes. The DCC Latin Core list guides which words the lessons choose instead.
+- **A core vocabulary deck before the course ends**: it would compete with the lessons for the same daily minutes. The DCC Latin Core list guides which words the lessons choose instead.
 - **A runtime morphology engine**: the cards hold the forms, and the grids and paradigms are data.
 - **A separate cloze type**: `ending` cards tagged `cloze` do the job without a schema change.
 - **Lemmatizing running text word by word**: not until the readiness meter needs it.

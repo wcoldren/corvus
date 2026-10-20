@@ -16,7 +16,7 @@ Nothing else goes in the file: no comments, and no cards for other lessons.
   "language": "la",
   "lesson": 4,
   "unit": 1,
-  "title": "The first declension: the ablative and the full table",
+  "title": "sum, esse: the present tense",
   "cards": [ ... ]
 }
 ```
@@ -46,7 +46,7 @@ Before writing the file, ask for the app's Home counts (cards due today, new car
 ## Order and ids
 
 - **File order is introduction order.** The app introduces new cards in lesson order and then file order. Put a lemma's vocab card before any ending, parse or headword card that uses it.
-- **Ids** look like `la-NN-<kind>-<slug>`: `c` concept, `p` phrase, `v` vocab, `e` ending, `x` parse, `h` headword, `z` cloze. The slug is lowercase ASCII with hyphens, made from the content: `la-04-v-nauta`, `la-04-e-nauta-gen-pl`, `la-04-x-viis`.
+- **Ids** look like `la-NN-<kind>-<slug>`: `c` concept, `p` phrase, `v` vocab, `e` ending, `x` parse, `h` headword, `z` cloze. The slug is lowercase ASCII with hyphens, made from the content: `la-04-v-sumus`, `la-04-e-sum-1pl`, `la-04-h-estis`.
 - Ids are permanent: the review history is keyed by them. Never reuse an id, even one from a deleted or retired card, and never give a new card an id that differs from an old one only by its lesson number.
 - A reverse card's id is generated (`<id>~r`). Don't write it.
 
@@ -141,9 +141,9 @@ From the 3rd declension on, write one for each new noun whose stem differs from 
 An `ending` card tagged `cloze`: a sentence with exactly one `___`, and the lemma of the missing word in parentheses. The answer is the missing form.
 
 ```json
-{ "id": "la-04-z-gloria-deo", "type": "ending", "lemma": "deus",
-  "prompt": "Glōria in excelsīs ___. (Deus)", "answer": "Deō",
-  "notes": "Dative: glory 'to' God.", "tags": ["cloze"] }
+{ "id": "la-04-z-genesis-terram", "type": "ending", "lemma": "terra",
+  "prompt": "In prīncipiō creāvit Deus caelum et ___. (terra)", "answer": "terram",
+  "notes": "Accusative: the direct object of *creāvit*, like *caelum*. Genesis 1:1.", "tags": ["cloze"] }
 ```
 
 Take the sentence from the story or a milestone text, and blank an ending that has already been taught. Say why that case in `notes`. Prefer Vulgate and Seneca sentences to prayers learned by heart, where the answer comes from memory rather than grammar.

@@ -61,7 +61,7 @@
           ]
         },
         "accept": {
-          "description": "Other answers that count as correct (typed modes).",
+          "description": "Other answers that count as correct in typed modes. A reveal card shows them under the answer as 'also: ...'.",
           "type": "array",
           "items": { "type": "string", "minLength": 1 }
         },

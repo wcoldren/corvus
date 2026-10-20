@@ -2,7 +2,7 @@
 
 ## How the course works
 
-About 80 daily lessons of roughly 10 minutes take you from zero to reading Aquinas and Seneca with a dictionary. At one lesson a day with some missed days, that is about four months.
+About 80 daily lessons of roughly 10 minutes take you from zero to reading Aquinas and Seneca with a dictionary. At about one lesson every 1.5 days, which leaves room for missed days and review days, that is about four months.
 
 - **Each lesson:** one new idea, a short story passage, 3–5 exercises, and one card file of about 13–14 new words and 20–22 cards in all (the budget is in `docs/card-authoring.md`).
 - **Pronunciation:** Ecclesiastical throughout (*c* before e/i = "ch", *g* before e/i = "j", *ae* = "eh", *ti* + vowel = "tsee").
@@ -30,7 +30,7 @@ Seven units of 10–14 lessons; every unit ends in a review lesson and a real te
 
 The **#** column is a topic's place in the plan, and **Cards** names the card file that taught it. The two numbers differ because the first chats each covered more than one row: `lesson-02` covers rows 2–4. A card file keeps the number of the chat that wrote it and is never renumbered or moved, since its card ids carry that number, so this column is the only map between the two.
 
-A blank Cards cell means the topic hasn't been taught yet, and the next lesson takes the first blank row. Fill in the cell when the card file is committed. Rows 5 and 6 are partly started: *est* and *sunt* (`lesson-02`) and *amat, ōrā, labōrā* (`lesson-01`) already have vocab cards.
+A blank Cards cell means the topic hasn't been taught yet, and the next lesson takes the first blank row. Fill in the cell when the card file is committed. Some rows are partly started. For rows 5 and 6, *est* and *sunt* (`lesson-02`), *amat, ōrā, labōrā* (`lesson-01`) and *amant* (`lesson-03`) already have vocab cards. Row 7's *-er* nouns (*puer, ager*) were left for later.
 
 ### Unit 1: Nouns and "to be" (Lessons 1–10)
 
@@ -178,4 +178,5 @@ The app, **corvus**, is built in this repo, and `SPEC.md` describes it. It is a 
   4. Parsing, on a grid: "*aquārum* → case and number"
   5. Headwords, typed: "*hominem* → *homō*", the skill of reading with a dictionary
   6. Phrases: a short sentence to translate
+  7. Cloze, typed: a sentence from a text with one ending blanked
 - **Saving progress:** review history lives on the iPad, and an export is the backup; the app reminds you after a week without one. There is no cloud sync.
