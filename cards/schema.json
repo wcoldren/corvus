@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://corvus.local/cards/schema.json",
+  "title": "Corvus lesson card file",
+  "description": "One file per lesson. Card ids are permanent: review history is keyed by them.",
+  "type": "object",
+  "required": ["language", "lesson", "unit", "title", "cards"],
+  "additionalProperties": false,
+  "properties": {
+    "language": {
+      "description": "BCP-47 code of the language being learned (e.g. 'la' for Latin).",
+      "type": "string",
+      "minLength": 2
+    },
+    "lesson": { "type": "integer", "minimum": 1 },
+    "unit": { "type": "integer", "minimum": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "cards": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/card" }
+    }
+  },
+  "$defs": {
+    "parseCell": {
+      "description": "case.number, e.g. 'gen.sg'.",
+      "enum": [
+        "nom.sg", "gen.sg", "dat.sg", "acc.sg", "abl.sg", "voc.sg", "loc.sg",
+        "nom.pl", "gen.pl", "dat.pl", "acc.pl", "abl.pl", "voc.pl", "loc.pl"
+      ]
+    },
+    "card": {
+      "type": "object",
+      "required": ["id", "type", "prompt", "answer"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Permanent unique id: lowercase letters, digits, hyphens. Convention: <language>-<lesson as 2 digits>-<slug>.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "type": { "enum": ["vocab", "concept", "ending", "parse", "phrase"] },
+        "prompt": {
+          "description": "What the learner sees. Markdown-lite: *italic* and **bold** only.",
+          "type": "string",
+          "minLength": 1
+        },
+        "answer": {
+          "description": "The canonical answer. For parse cards, the list of every valid case.number cell.",
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/parseCell" }
+            }
+          ]
+        },
+        "accept": {
+          "description": "Other answers that count as correct (typed modes).",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "mode": {
+          "description": "Override the type's default answer mode.",
+          "enum": ["typed", "reveal", "grid"]
+        },
+        "reverse": {
+          "description": "vocab only: also generate an English-to-target card with id '<id>~r'.",
+          "type": "boolean"
+        },
+        "hint": { "type": "string" },
+        "notes": {
+          "description": "Shown after answering: pronunciation, chemistry links, usage.",
+          "type": "string"
+        },
+        "speak": {
+          "description": "Text for the speak button if it differs from the target-language side.",
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "uniqueItems": true
+        },
+        "retired": {
+          "description": "Hide from reviews without deleting history.",
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "parse" } } },
+          "then": { "properties": { "answer": { "type": "array" } } },
+          "else": { "properties": { "answer": { "type": "string" } } }
+        },
+        {
+          "if": { "required": ["reverse"] },
+          "then": { "properties": { "type": { "const": "vocab" } } }
+        }
+      ]
+    }
+  }
+}

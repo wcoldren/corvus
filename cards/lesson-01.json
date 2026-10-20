@@ -1,0 +1,195 @@
+{
+  "language": "la",
+  "lesson": 1,
+  "unit": 1,
+  "title": "Endings vs word order; the accusative -m; element names",
+  "cards": [
+    {
+      "id": "la-01-c-endings-vs-order",
+      "type": "concept",
+      "prompt": "In Latin, what tells you who does what to whom: word order or endings?",
+      "answer": "Endings. Word order is flexible; the endings carry the grammar.",
+      "notes": "*Deus hominem amat* = *Hominem Deus amat*.",
+      "tags": [
+        "concept"
+      ]
+    },
+    {
+      "id": "la-01-c-accusative-m",
+      "type": "concept",
+      "prompt": "What does the ending **-m** usually mark on a noun (as in *Deum*, *hominem*)?",
+      "answer": "The direct object (accusative singular).",
+      "tags": [
+        "concept",
+        "accusative"
+      ]
+    },
+    {
+      "id": "la-01-p-hominem-deus-amat",
+      "type": "phrase",
+      "prompt": "Hominem Deus amat.",
+      "answer": "God loves the human being.",
+      "notes": "*hominem* has the object ending -m, so it is loved, even though it comes first.",
+      "tags": [
+        "phrase"
+      ]
+    },
+    {
+      "id": "la-01-p-ora-et-labora",
+      "type": "phrase",
+      "prompt": "Ōrā et labōrā.",
+      "answer": "Pray and work.",
+      "notes": "Benedictine motto. OH-rah et lah-BOH-rah.",
+      "tags": [
+        "phrase"
+      ]
+    },
+    {
+      "id": "la-01-v-deus",
+      "type": "vocab",
+      "prompt": "Deus, Deī, m.",
+      "answer": "God",
+      "reverse": true,
+      "notes": "DEH-oos",
+      "tags": [
+        "vocab"
+      ]
+    },
+    {
+      "id": "la-01-v-homo",
+      "type": "vocab",
+      "prompt": "homō, hominis, m.",
+      "answer": "human being",
+      "reverse": true,
+      "accept": [
+        "man",
+        "person",
+        "human"
+      ],
+      "notes": "3rd declension; you met the accusative *hominem*. Full pattern comes later.",
+      "tags": [
+        "vocab"
+      ]
+    },
+    {
+      "id": "la-01-v-amat",
+      "type": "vocab",
+      "prompt": "amat",
+      "answer": "he/she/it loves",
+      "reverse": true,
+      "accept": [
+        "loves",
+        "he loves",
+        "she loves",
+        "it loves"
+      ],
+      "tags": [
+        "vocab"
+      ]
+    },
+    {
+      "id": "la-01-v-et",
+      "type": "vocab",
+      "prompt": "et",
+      "answer": "and",
+      "reverse": true,
+      "tags": [
+        "vocab"
+      ]
+    },
+    {
+      "id": "la-01-v-ora",
+      "type": "vocab",
+      "prompt": "ōrā",
+      "answer": "pray!",
+      "reverse": true,
+      "accept": [
+        "pray"
+      ],
+      "notes": "Command form (imperative) of *ōrāre*.",
+      "tags": [
+        "vocab"
+      ]
+    },
+    {
+      "id": "la-01-v-labora",
+      "type": "vocab",
+      "prompt": "labōrā",
+      "answer": "work!",
+      "reverse": true,
+      "accept": [
+        "work",
+        "labor"
+      ],
+      "notes": "Command form of *labōrāre*; compare *laboratory*.",
+      "tags": [
+        "vocab"
+      ]
+    },
+    {
+      "id": "la-01-v-ferrum",
+      "type": "vocab",
+      "prompt": "ferrum, ferrī, n.",
+      "answer": "iron",
+      "reverse": true,
+      "notes": "Fe. Stem *ferr-* → ferrous, ferric.",
+      "tags": [
+        "vocab",
+        "element",
+        "chemistry"
+      ]
+    },
+    {
+      "id": "la-01-v-aurum",
+      "type": "vocab",
+      "prompt": "aurum, aurī, n.",
+      "answer": "gold",
+      "reverse": true,
+      "notes": "Au. Stem *aur-* → auric.",
+      "tags": [
+        "vocab",
+        "element",
+        "chemistry"
+      ]
+    },
+    {
+      "id": "la-01-v-argentum",
+      "type": "vocab",
+      "prompt": "argentum, argentī, n.",
+      "answer": "silver",
+      "reverse": true,
+      "notes": "Ag. Also gave Argentina its name.",
+      "tags": [
+        "vocab",
+        "element",
+        "chemistry"
+      ]
+    },
+    {
+      "id": "la-01-v-plumbum",
+      "type": "vocab",
+      "prompt": "plumbum, plumbī, n.",
+      "answer": "lead",
+      "reverse": true,
+      "notes": "Pb. Stem *plumb-* → plumber, plumb line.",
+      "tags": [
+        "vocab",
+        "element",
+        "chemistry"
+      ]
+    },
+    {
+      "id": "la-01-v-cuprum",
+      "type": "vocab",
+      "prompt": "cuprum, cuprī, n.",
+      "answer": "copper",
+      "reverse": true,
+      "notes": "Cu. Stem *cupr-* → cuprous, cupric.",
+      "tags": [
+        "vocab",
+        "element",
+        "chemistry"
+      ]
+    }
+  ]
+}

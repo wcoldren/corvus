@@ -1,0 +1,473 @@
+{
+  "language": "la",
+  "lesson": 3,
+  "unit": 1,
+  "title": "The second declension: masculine -us and neuter -um",
+  "cards": [
+    {
+      "id": "la-03-c-decl2-endings",
+      "type": "concept",
+      "prompt": "Second-declension nouns end in what in the nominative singular, and which genders go with each?",
+      "answer": "-us (mostly masculine) and -um (neuter).",
+      "tags": [
+        "concept",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-c-neuter-rule",
+      "type": "concept",
+      "prompt": "What is the neuter rule?",
+      "answer": "Nominative and accusative are always identical, and in the plural both end in -a. True in every declension.",
+      "tags": [
+        "concept",
+        "neuter"
+      ]
+    },
+    {
+      "id": "la-03-c-find-stem",
+      "type": "concept",
+      "prompt": "How do you find a noun's stem?",
+      "answer": "Take the genitive singular from the dictionary entry and drop its ending: *ferrum, ferrī* → *ferr-*.",
+      "notes": "That stem is what chemistry builds on: ferrous, ferric, ferrocene.",
+      "tags": [
+        "concept",
+        "chemistry"
+      ]
+    },
+    {
+      "id": "la-03-c-stem-cupr",
+      "type": "concept",
+      "prompt": "Which Latin stem gives *cuprous* and *cupric*, and from what word?",
+      "answer": "*cupr-*, from *cuprum, cuprī*, copper.",
+      "tags": [
+        "concept",
+        "chemistry"
+      ]
+    },
+    {
+      "id": "la-03-v-dominus",
+      "type": "vocab",
+      "prompt": "dominus, dominī, m.",
+      "answer": "lord",
+      "reverse": true,
+      "accept": [
+        "master"
+      ],
+      "notes": "DOH-mee-noos.",
+      "tags": [
+        "vocab",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-v-servus",
+      "type": "vocab",
+      "prompt": "servus, servī, m.",
+      "answer": "servant",
+      "reverse": true,
+      "accept": [
+        "slave"
+      ],
+      "tags": [
+        "vocab",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-v-agnus",
+      "type": "vocab",
+      "prompt": "agnus, agnī, m.",
+      "answer": "lamb",
+      "reverse": true,
+      "notes": "AH-nyoos: Ecclesiastical *gn* = \"ny\", as in canyon.",
+      "tags": [
+        "vocab",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-v-verbum",
+      "type": "vocab",
+      "prompt": "verbum, verbī, n.",
+      "answer": "word",
+      "reverse": true,
+      "tags": [
+        "vocab",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-v-caelum",
+      "type": "vocab",
+      "prompt": "caelum, caelī, n.",
+      "answer": "heaven",
+      "reverse": true,
+      "accept": [
+        "sky"
+      ],
+      "notes": "CHEH-loom: *c* before *ae* is \"ch\".",
+      "tags": [
+        "vocab",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-v-amant",
+      "type": "vocab",
+      "prompt": "amant",
+      "answer": "they love",
+      "reverse": true,
+      "accept": [
+        "love"
+      ],
+      "notes": "Compare *amat*, he/she/it loves.",
+      "tags": [
+        "vocab"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-nom-sg",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · nominative singular of *dominus*",
+      "answer": "dominus",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-gen-sg",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · genitive singular of *dominus*",
+      "answer": "dominī",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-dat-sg",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · dative singular of *dominus*",
+      "answer": "dominō",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-acc-sg",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · accusative singular of *dominus*",
+      "answer": "dominum",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-abl-sg",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · ablative singular of *dominus*",
+      "answer": "dominō",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-nom-pl",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · nominative plural of *dominus*",
+      "answer": "dominī",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-gen-pl",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · genitive plural of *dominus*",
+      "answer": "dominōrum",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-dat-pl",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · dative plural of *dominus*",
+      "answer": "dominīs",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-acc-pl",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · accusative plural of *dominus*",
+      "answer": "dominōs",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-dominus-abl-pl",
+      "type": "ending",
+      "prompt": "2nd decl. masc. · ablative plural of *dominus*",
+      "answer": "dominīs",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-nom-sg",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · nominative singular of *ferrum*",
+      "answer": "ferrum",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-gen-sg",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · genitive singular of *ferrum*",
+      "answer": "ferrī",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-dat-sg",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · dative singular of *ferrum*",
+      "answer": "ferrō",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-acc-sg",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · accusative singular of *ferrum*",
+      "answer": "ferrum",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-abl-sg",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · ablative singular of *ferrum*",
+      "answer": "ferrō",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-nom-pl",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · nominative plural of *ferrum*",
+      "answer": "ferra",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-gen-pl",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · genitive plural of *ferrum*",
+      "answer": "ferrōrum",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-dat-pl",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · dative plural of *ferrum*",
+      "answer": "ferrīs",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-acc-pl",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · accusative plural of *ferrum*",
+      "answer": "ferra",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-e-ferrum-abl-pl",
+      "type": "ending",
+      "prompt": "2nd decl. neut. · ablative plural of *ferrum*",
+      "answer": "ferrīs",
+      "tags": [
+        "ending",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-x-domini",
+      "type": "parse",
+      "prompt": "*dominī*: every possible case and number?",
+      "answer": [
+        "gen.sg",
+        "nom.pl"
+      ],
+      "tags": [
+        "parse",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-x-domino",
+      "type": "parse",
+      "prompt": "*dominō*: every possible case and number?",
+      "answer": [
+        "dat.sg",
+        "abl.sg"
+      ],
+      "tags": [
+        "parse",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-x-servos",
+      "type": "parse",
+      "prompt": "*servōs*: every possible case and number?",
+      "answer": [
+        "acc.pl"
+      ],
+      "tags": [
+        "parse",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-x-dominis",
+      "type": "parse",
+      "prompt": "*dominīs*: every possible case and number?",
+      "answer": [
+        "dat.pl",
+        "abl.pl"
+      ],
+      "tags": [
+        "parse",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-x-caeli",
+      "type": "parse",
+      "prompt": "*caelī*: every possible case and number?",
+      "answer": [
+        "gen.sg",
+        "nom.pl"
+      ],
+      "tags": [
+        "parse",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-x-verba",
+      "type": "parse",
+      "prompt": "*verba*: every possible case and number?",
+      "answer": [
+        "nom.pl",
+        "acc.pl"
+      ],
+      "notes": "Neuter rule: nominative = accusative.",
+      "tags": [
+        "parse",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-x-ferrum",
+      "type": "parse",
+      "prompt": "*ferrum*: every possible case and number?",
+      "answer": [
+        "nom.sg",
+        "acc.sg"
+      ],
+      "notes": "Neuter rule: nominative = accusative.",
+      "tags": [
+        "parse",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-x-dei",
+      "type": "parse",
+      "prompt": "*Deī*: every possible case and number?",
+      "answer": [
+        "gen.sg",
+        "nom.pl"
+      ],
+      "notes": "In *Agnus Deī* it is genitive singular, \"of God\".",
+      "tags": [
+        "parse",
+        "decl-2"
+      ]
+    },
+    {
+      "id": "la-03-p-agnus-dei",
+      "type": "phrase",
+      "prompt": "Agnus Deī",
+      "answer": "Lamb of God",
+      "notes": "*Agnus* nominative, *Deī* genitive. AH-nyoos DEH-ee.",
+      "tags": [
+        "phrase"
+      ]
+    },
+    {
+      "id": "la-03-p-dominus-servum-amat",
+      "type": "phrase",
+      "prompt": "Dominus servum amat.",
+      "answer": "The lord loves the servant.",
+      "tags": [
+        "phrase"
+      ]
+    },
+    {
+      "id": "la-03-p-servi-dominum-amant",
+      "type": "phrase",
+      "prompt": "Servī Dominum amant.",
+      "answer": "The servants love the Lord.",
+      "tags": [
+        "phrase"
+      ]
+    },
+    {
+      "id": "la-03-p-verbum-dei",
+      "type": "phrase",
+      "prompt": "Verbum Deī",
+      "answer": "The word of God",
+      "tags": [
+        "phrase"
+      ]
+    }
+  ]
+}
