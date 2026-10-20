@@ -40,6 +40,11 @@
           "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
         },
         "type": { "enum": ["vocab", "concept", "ending", "parse", "phrase"] },
+        "lemma": {
+          "description": "The dictionary headword the card is about, lowercase with its marks (e.g. 'aqua', 'amō' for amat). Cards that share a lemma are siblings.",
+          "type": "string",
+          "minLength": 1
+        },
         "prompt": {
           "description": "What the learner sees. Markdown-lite: *italic* and **bold** only.",
           "type": "string",

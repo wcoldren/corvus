@@ -39,6 +39,7 @@
     {
       "id": "la-03-v-dominus",
       "type": "vocab",
+      "lemma": "dominus",
       "prompt": "dominus, dominī, m.",
       "answer": "lord",
       "reverse": true,
@@ -54,6 +55,7 @@
     {
       "id": "la-03-v-servus",
       "type": "vocab",
+      "lemma": "servus",
       "prompt": "servus, servī, m.",
       "answer": "servant",
       "accept": [
@@ -67,6 +69,7 @@
     {
       "id": "la-03-v-agnus",
       "type": "vocab",
+      "lemma": "agnus",
       "prompt": "agnus, agnī, m.",
       "answer": "lamb",
       "notes": "AH-nyoos: Ecclesiastical *gn* = \"ny\", as in canyon.",
@@ -78,6 +81,7 @@
     {
       "id": "la-03-v-verbum",
       "type": "vocab",
+      "lemma": "verbum",
       "prompt": "verbum, verbī, n.",
       "answer": "word",
       "tags": [
@@ -88,6 +92,7 @@
     {
       "id": "la-03-v-caelum",
       "type": "vocab",
+      "lemma": "caelum",
       "prompt": "caelum, caelī, n. (pl. caelī, m.)",
       "answer": "heaven",
       "reverse": true,
@@ -103,6 +108,7 @@
     {
       "id": "la-03-v-amant",
       "type": "vocab",
+      "lemma": "amō",
       "prompt": "amant",
       "answer": "they love",
       "accept": [
@@ -116,6 +122,7 @@
     {
       "id": "la-03-e-deus-gen-sg",
       "type": "ending",
+      "lemma": "deus",
       "prompt": "2nd decl. masc. · genitive singular of *Deus*",
       "answer": "Deī",
       "tags": [
@@ -126,6 +133,7 @@
     {
       "id": "la-03-e-dominus-dat-sg",
       "type": "ending",
+      "lemma": "dominus",
       "prompt": "2nd decl. masc. · dative singular of *dominus*",
       "answer": "dominō",
       "tags": [
@@ -136,6 +144,7 @@
     {
       "id": "la-03-e-agnus-acc-sg",
       "type": "ending",
+      "lemma": "agnus",
       "prompt": "2nd decl. masc. · accusative singular of *agnus*",
       "answer": "agnum",
       "tags": [
@@ -146,6 +155,7 @@
     {
       "id": "la-03-e-servus-gen-pl",
       "type": "ending",
+      "lemma": "servus",
       "prompt": "2nd decl. masc. · genitive plural of *servus*",
       "answer": "servōrum",
       "notes": "*Servus servōrum Deī*, \"servant of the servants of God\", a papal title.",
@@ -157,6 +167,7 @@
     {
       "id": "la-03-e-agnus-abl-pl",
       "type": "ending",
+      "lemma": "agnus",
       "prompt": "2nd decl. masc. · ablative plural of *agnus*",
       "answer": "agnīs",
       "notes": "The dative plural is the same form.",
@@ -168,6 +179,7 @@
     {
       "id": "la-03-e-dominus-acc-pl",
       "type": "ending",
+      "lemma": "dominus",
       "prompt": "2nd decl. masc. · accusative plural of *dominus*",
       "answer": "dominōs",
       "tags": [
@@ -178,6 +190,7 @@
     {
       "id": "la-03-x-servo",
       "type": "parse",
+      "lemma": "servus",
       "prompt": "servō",
       "answer": [
         "dat.sg",
@@ -191,6 +204,7 @@
     {
       "id": "la-03-x-caeli",
       "type": "parse",
+      "lemma": "caelum",
       "prompt": "caelī",
       "answer": [
         "gen.sg",
@@ -205,6 +219,7 @@
     {
       "id": "la-03-x-ferrum",
       "type": "parse",
+      "lemma": "ferrum",
       "prompt": "ferrum",
       "answer": [
         "nom.sg",
@@ -219,6 +234,7 @@
     {
       "id": "la-03-h-hominem",
       "type": "ending",
+      "lemma": "homō",
       "prompt": "*hominem*: dictionary headword?",
       "answer": "homō",
       "notes": "*homō, hominis, m.* The stem *homin-* comes from the genitive, so dropping -em does not give the headword.",
@@ -229,6 +245,7 @@
     {
       "id": "la-03-h-verba",
       "type": "ending",
+      "lemma": "verbum",
       "prompt": "*verba*: dictionary headword?",
       "answer": "verbum",
       "notes": "*verbum, verbī, n.* Neuter plurals end in -a, so this is not a 1st-declension *verba*.",

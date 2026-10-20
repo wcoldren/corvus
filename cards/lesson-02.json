@@ -58,6 +58,7 @@
     {
       "id": "la-02-v-aqua",
       "type": "vocab",
+      "lemma": "aqua",
       "prompt": "aqua, aquae, f.",
       "answer": "water",
       "notes": "AH-kwah. *Aqua rēgia*, *aqua vītae*.",
@@ -69,6 +70,7 @@
     {
       "id": "la-02-v-anima",
       "type": "vocab",
+      "lemma": "anima",
       "prompt": "anima, animae, f.",
       "answer": "soul",
       "accept": [
@@ -85,6 +87,7 @@
     {
       "id": "la-02-v-gloria",
       "type": "vocab",
+      "lemma": "glōria",
       "prompt": "glōria, glōriae, f.",
       "answer": "glory",
       "reverse": true,
@@ -96,6 +99,7 @@
     {
       "id": "la-02-v-vita",
       "type": "vocab",
+      "lemma": "vīta",
       "prompt": "vīta, vītae, f.",
       "answer": "life",
       "notes": "VEE-tah; *vital*, *vitamin*.",
@@ -107,6 +111,7 @@
     {
       "id": "la-02-v-terra",
       "type": "vocab",
+      "lemma": "terra",
       "prompt": "terra, terrae, f.",
       "answer": "earth",
       "reverse": true,
@@ -122,6 +127,7 @@
     {
       "id": "la-02-v-ecclesia",
       "type": "vocab",
+      "lemma": "ecclēsia",
       "prompt": "ecclēsia, ecclēsiae, f.",
       "answer": "church",
       "notes": "ek-KLEH-zee-ah.",
@@ -133,6 +139,7 @@
     {
       "id": "la-02-v-est",
       "type": "vocab",
+      "lemma": "sum",
       "prompt": "est",
       "answer": "is",
       "accept": [
@@ -148,6 +155,7 @@
     {
       "id": "la-02-v-sunt",
       "type": "vocab",
+      "lemma": "sum",
       "prompt": "sunt",
       "answer": "are",
       "accept": [
@@ -161,6 +169,7 @@
     {
       "id": "la-02-e-vita-gen-sg",
       "type": "ending",
+      "lemma": "vīta",
       "prompt": "1st decl. · genitive singular of *vīta*",
       "answer": "vītae",
       "notes": "*Aqua vītae*, \"water of life\".",
@@ -172,6 +181,7 @@
     {
       "id": "la-02-e-gloria-acc-sg",
       "type": "ending",
+      "lemma": "glōria",
       "prompt": "1st decl. · accusative singular of *glōria*",
       "answer": "glōriam",
       "tags": [
@@ -182,6 +192,7 @@
     {
       "id": "la-02-e-aqua-abl-sg",
       "type": "ending",
+      "lemma": "aqua",
       "prompt": "1st decl. · ablative singular of *aqua*",
       "answer": "aquā",
       "tags": [
@@ -192,6 +203,7 @@
     {
       "id": "la-02-e-anima-gen-pl",
       "type": "ending",
+      "lemma": "anima",
       "prompt": "1st decl. · genitive plural of *anima*",
       "answer": "animārum",
       "tags": [
@@ -202,6 +214,7 @@
     {
       "id": "la-02-e-ecclesia-abl-pl",
       "type": "ending",
+      "lemma": "ecclēsia",
       "prompt": "1st decl. · ablative plural of *ecclēsia*",
       "answer": "ecclēsiīs",
       "notes": "The dative plural is the same form.",
@@ -213,6 +226,7 @@
     {
       "id": "la-02-e-terra-acc-pl",
       "type": "ending",
+      "lemma": "terra",
       "prompt": "1st decl. · accusative plural of *terra*",
       "answer": "terrās",
       "tags": [
@@ -223,6 +237,7 @@
     {
       "id": "la-02-x-aquae",
       "type": "parse",
+      "lemma": "aqua",
       "prompt": "aquae",
       "answer": [
         "gen.sg",
@@ -238,6 +253,7 @@
     {
       "id": "la-02-x-terris",
       "type": "parse",
+      "lemma": "terra",
       "prompt": "terrīs",
       "answer": [
         "dat.pl",
