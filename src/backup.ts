@@ -8,7 +8,7 @@
 // files can be merged in either order. Card state and daily totals are then
 // rebuilt by replaying the merged log, never copied from the file.
 
-import { STORES, clearAll, transact, type Db } from './db/db.ts';
+import { STORES, clearAll, transact, type Db, type Tx } from './db/db.ts';
 import { localZone, studyDay, type Zone } from './day.ts';
 import { LOG_FIELDS, LOG_KINDS, LOG_V, MANUAL_ACTIONS, buildDaily, replay, type LogRow } from './log.ts';
 import type { Unlocked } from './queue.ts';
@@ -212,22 +212,13 @@ export async function importBackup(db: Db, backup: Backup, mode: 'merge' | 'repl
     const unlocked: Unlocked = { ...deviceUnlocked };
     for (const [lang, n] of Object.entries(backup.unlockedThrough)) unlocked[lang] = Math.max(unlocked[lang] ?? 0, n);
 
-    // Replay is synchronous, so the transaction stays open across it.
-    const merged = [...deviceRows, ...newRows];
-    const states = replay(merged, params);
-    const daily = buildDaily(merged);
-
-    const stateStore = tx.objectStore('cardState');
-    const dailyStore = tx.objectStore('daily');
-    await Promise.all([stateStore.clear(), dailyStore.clear()]);
     await Promise.all([
       ...newRows.map((r) => logStore.add(r)),
       ...backup.params.map((p) => paramStore.put(p)),
-      ...[...states].map(([id, s]) => stateStore.put(s, id)),
-      ...daily.map((d) => dailyStore.put(d)),
       meta.put(unlocked, 'unlockedThrough'),
       ...(mode === 'replace' && backup.settings ? [meta.put(backup.settings, 'settings')] : []),
     ]);
+    const states = await rewriteCaches(tx, [...deviceRows, ...newRows], params);
     return { added: newRows.length, states };
   }));
 
@@ -240,6 +231,55 @@ export async function importBackup(db: Db, backup: Backup, mode: 'merge' | 'repl
     })
     .map(([id]) => id);
   return { added, differs };
+}
+
+/**
+ * Replace every card state and daily total with a replay of `rows`, inside
+ * the caller's transaction. Replay is synchronous, so the transaction stays
+ * open across it.
+ */
+async function rewriteCaches(tx: Tx<'readwrite'>, rows: LogRow[], params: ReadonlyMap<string, Params>): Promise<Map<string, CardState>> {
+  const states = replay(rows, params);
+  const daily = buildDaily(rows);
+  const stateStore = tx.objectStore('cardState');
+  const dailyStore = tx.objectStore('daily');
+  await Promise.all([stateStore.clear(), dailyStore.clear()]);
+  await Promise.all([...[...states].map(([id, s]) => stateStore.put(s, id)), ...daily.map((d) => dailyStore.put(d))]);
+  return states;
+}
+
+export interface RebuildResult {
+  /** Cards with state after the rebuild. */
+  cards: number;
+  /** Cards whose state the rebuild changed, added or removed. */
+  changed: number;
+}
+
+/**
+ * "Rebuild schedule" (SPEC.md, Storage): recompute every card's state and
+ * every day's totals from the log, which is the record of truth. Normally
+ * this changes nothing; a non-zero `changed` means the cache had drifted.
+ */
+export async function rebuildSchedule(db: Db): Promise<RebuildResult> {
+  return db.write((conn) =>
+    transact(conn, ['reviewLog', 'params', 'cardState', 'daily'], 'readwrite', async (tx) => {
+      const [rows, params, keys, values] = await Promise.all([
+        tx.objectStore('reviewLog').getAll(),
+        tx.objectStore('params').getAll(),
+        tx.objectStore('cardState').getAllKeys(),
+        tx.objectStore('cardState').getAll(),
+      ]);
+      const before = new Map(keys.map((k, i) => [k, values[i]!]));
+      const after = await rewriteCaches(tx, rows, new Map(params.map((p) => [p.id, p])));
+      let changed = 0;
+      for (const id of new Set([...before.keys(), ...after.keys()])) {
+        const a = before.get(id);
+        const b = after.get(id);
+        if (!a || !b || !sameState(a, b)) changed++;
+      }
+      return { cards: after.size, changed };
+    }),
+  );
 }
 
 /** localStorage, or null where it is missing or reading it throws. */

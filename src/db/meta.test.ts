@@ -5,7 +5,7 @@ import { loadCards } from '../cards/load.ts';
 import { lessonToUnlock } from '../queue.ts';
 import { DEFAULT_SETTINGS } from '../settings.ts';
 import { Db } from './db.ts';
-import { getLastExport, getSettings, getUnlocked, unlockLesson } from './meta.ts';
+import { getLastExport, getSettings, getUnlocked, setLastExport, unlockLesson } from './meta.ts';
 
 let n = 0;
 const fresh = (bus = new Bus()) => new Db({ name: `meta-test-${++n}`, bus });
@@ -72,5 +72,15 @@ describe('lessonToUnlock', () => {
     expect(lessonToUnlock(cards, { la: 5 }, 'la')).toBeNull();
     expect(lessonToUnlock(cards, { la: 7 }, 'la')).toBeNull();
     expect(lessonToUnlock(cards, {}, 'el')).toBe(9);
+  });
+});
+
+describe('lastExport', () => {
+  it('is null until a backup is recorded, then the time recorded', async () => {
+    const db = fresh();
+    expect(await getLastExport(db)).toBeNull();
+    await setLastExport(db, 1234);
+    expect(await getLastExport(db)).toBe(1234);
+    db.close();
   });
 });

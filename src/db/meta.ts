@@ -18,6 +18,11 @@ export async function getLastExport(db: Db): Promise<number | null> {
   return ((await db.read((conn) => conn.get('meta', 'lastExport'))) as number | undefined) ?? null;
 }
 
+/** Record a backup that reached the learner (shared or downloaded), for the export reminder. */
+export async function setLastExport(db: Db, ts: number): Promise<void> {
+  await db.write((conn) => conn.put('meta', ts, 'lastExport'));
+}
+
 /**
  * Unlock a language's cards through `lesson` (SPEC.md, Unlock). The number
  * only ever goes up, so a repeated tap, a retry or a stale screen asking

@@ -50,7 +50,7 @@ const MIGRATIONS: ((db: Conn, tx: UpgradeTx) => void)[] = [
 
 export const DB_VERSION = MIGRATIONS.length;
 
-type Tx<Mode extends IDBTransactionMode> = IDBPTransaction<CorvusSchema, StoreNames<CorvusSchema>[], Mode>;
+export type Tx<Mode extends IDBTransactionMode> = IDBPTransaction<CorvusSchema, StoreNames<CorvusSchema>[], Mode>;
 
 /**
  * Run `body` in one transaction and wait for it to commit. If `body` throws,

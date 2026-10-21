@@ -5,6 +5,7 @@ import {
   backupFileName,
   buildExport,
   importBackup,
+  rebuildSchedule,
   reset,
   summarizeImport,
   validateBackup,
@@ -245,6 +246,32 @@ describe('import', () => {
     expect(b.daily).toEqual(a.daily);
     expect(b.meta).toEqual(a.meta);
     src.close();
+    db.close();
+  });
+});
+
+describe('rebuildSchedule', () => {
+  it('changes nothing when the cache matches the log', async () => {
+    const db = fresh();
+    await study(db, ['a', 'b'], '2026-06-10');
+    const before = await dump(db);
+    expect(await rebuildSchedule(db)).toEqual({ cards: 2, changed: 0 });
+    expect(await dump(db)).toEqual(before);
+    db.close();
+  });
+
+  it('repairs a drifted card state and daily row, and drops state the log does not support', async () => {
+    const db = fresh();
+    await study(db, ['a', 'b'], '2026-06-10');
+    const good = await dump(db);
+    await db.write(async (conn) => {
+      const a = (await conn.get('cardState', 'a'))!;
+      await conn.put('cardState', { ...a, due: a.due + 86_400_000 }, 'a');
+      await conn.put('cardState', a, 'ghost');
+      await conn.put('daily', { day: '2026-06-10', reviews: 99, newCards: 0, steps: 0, totalMs: 0 });
+    });
+    expect(await rebuildSchedule(db)).toEqual({ cards: 2, changed: 2 });
+    expect(await dump(db)).toEqual(good);
     db.close();
   });
 });
