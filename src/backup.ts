@@ -11,12 +11,11 @@
 import { STORES, clearAll, transact, type Db } from './db/db.ts';
 import { localZone, studyDay, type Zone } from './day.ts';
 import { LOG_FIELDS, LOG_KINDS, LOG_V, MANUAL_ACTIONS, buildDaily, replay, type LogRow } from './log.ts';
+import type { Unlocked } from './queue.ts';
 import type { CardState, Params } from './scheduler.ts';
 
 export const BACKUP_FORMAT = 'corvus-backup';
 export const BACKUP_VERSION = 1;
-
-export type Unlocked = Record<string, number>;
 
 export interface Backup {
   format: typeof BACKUP_FORMAT;

@@ -126,7 +126,7 @@ Epoch: not yet reached.
 
 ### Building today's session
 
-A pure function, `buildQueue(cards, states, log, settings, now)`, so it can be unit-tested on an injected clock.
+A pure function, `buildQueue`, plans the session from the cards, their states, today's row of the `daily` store, the unlocked lessons, the settings and the clock, so it can be unit-tested on an injected clock. It reads today's totals rather than the log, so planning never scans the whole history. Learning cards come due during a session, so the session picks each next card as answers come in: an undone card first, then a learning card whose step is due, then the next planned card, then learn-ahead.
 
 1. **Reviews due**: every review-state card due before the next rollover. Learning and relearning cards use their exact due times instead.
 2. **Order**: ascending retrievability at session start, computed through the wrapper. Ties, which are common, are broken by a shuffle seeded from the study day, so a lesson's cards never come back as a recited sequence.
