@@ -218,3 +218,119 @@ nav.top {
   opacity: 0.45;
   pointer-events: none;
 }
+
+/* Review. Laid out top-down within the visible viewport, so the answer
+   field and the rating buttons sit above the on-screen keyboard. */
+.review {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(var(--vvh) - 2rem);
+}
+
+.review nav.top .progress {
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.review-body > * + * {
+  margin-top: 1rem;
+}
+
+.prompt-block .ask {
+  margin: 0;
+}
+
+.prompt {
+  font-size: 1.25rem;
+  margin: 0.25rem 0 0;
+}
+
+.prompt.target {
+  font-size: max(28px, 1.6rem);
+  line-height: 1.25;
+}
+
+.expected {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.expected.target {
+  font-size: max(28px, 1.6rem);
+}
+
+.expected mark {
+  background: none;
+  color: inherit;
+  text-decoration: underline 3px var(--accent);
+  text-underline-offset: 4px;
+  font-weight: 800;
+}
+
+.verdict {
+  font-weight: 700;
+}
+
+.verdict.good {
+  color: var(--good);
+}
+
+.verdict.bad {
+  color: var(--bad);
+}
+
+.typed {
+  font-family: var(--font-target);
+}
+
+.notes {
+  color: var(--muted);
+}
+
+.hint-text {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.keybar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.keybar .key {
+  font-size: 1.3rem;
+  min-width: 48px;
+  padding: 0.25rem 0.6rem;
+}
+
+.ratings {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.ratings .rate {
+  flex-direction: column;
+  gap: 0;
+  min-height: 56px;
+  padding: 0.4rem 0.25rem;
+}
+
+.ratings .rate small {
+  font-size: 0.8rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+/* The suggested rating is the largest target. */
+.ratings .rate.suggested {
+  min-height: 72px;
+  font-size: 1.15rem;
+}
+
+input.target {
+  font-family: var(--font-target);
+  font-size: max(22px, 1.25rem);
+}
