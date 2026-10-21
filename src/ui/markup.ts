@@ -62,7 +62,10 @@ export function renderMarkup(text: string, emLang?: string): DocumentFragment {
       if (typeof n === 'string') parent.appendChild(document.createTextNode(n));
       else {
         const el = document.createElement(n.tag);
-        if (n.tag === 'em' && emLang) el.lang = emLang;
+        if (n.tag === 'em' && emLang) {
+          el.lang = emLang;
+          el.className = 'target';
+        }
         build(n.children, el);
         parent.appendChild(el);
       }
