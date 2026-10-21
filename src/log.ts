@@ -12,7 +12,9 @@ import { elapsedDays, review, type CardState, type Params, type Rating } from '.
 export const LOG_V = 1;
 
 export type Outcome = 'correct' | 'slip' | 'wrongForm' | 'wrong' | 'revealed';
-export type ManualAction = 'suspend' | 'unsuspend' | 'flag' | 'unflag' | 'forget';
+export const LOG_KINDS = ['review', 'undo', 'manual'] as const;
+export const MANUAL_ACTIONS = ['suspend', 'unsuspend', 'flag', 'unflag', 'forget'] as const;
+export type ManualAction = (typeof MANUAL_ACTIONS)[number];
 
 /** Fields every row has, whatever its kind. */
 interface RowBase {

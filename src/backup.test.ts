@@ -272,3 +272,53 @@ describe('reset', () => {
     db.close();
   });
 });
+
+describe('import failures (code review, 2026-10-20)', () => {
+  async function device() {
+    const db = fresh();
+    await study(db, ['a', 'b'], '2026-06-10');
+    return { db, before: await dump(db) };
+  }
+  async function file() {
+    const src = fresh();
+    await study(src, ['c'], '2026-06-12');
+    const b = JSON.parse(JSON.stringify(await buildExport(src, { now: 0, buildId: 'x' })));
+    src.close();
+    return b;
+  }
+
+  it('leaves the device untouched when a replace hits a row the scheduler rejects', async () => {
+    const { db, before } = await device();
+    const bad = await file();
+    bad.reviewLog[0].rating = 0;
+    expect(() => validateBackup(bad)).toThrow(/rating 0/);
+    // Even past validation, the scheduler's refusal rolls the wipe back.
+    await expect(importBackup(db, bad as Backup, 'replace')).rejects.toThrow(/manual rating/);
+    expect(await dump(db)).toEqual(before);
+    db.close();
+  });
+
+  it('rejects a card state that is not a state, before writing anything', async () => {
+    const { db, before } = await device();
+    const bad = await file();
+    bad.cardStates['la-01-x'] = null;
+    expect(() => validateBackup(bad)).toThrow(BackupError);
+    expect(await dump(db)).toEqual(before);
+    db.close();
+  });
+
+  it('rejects a file that holds the same row twice', async () => {
+    const bad = await file();
+    bad.reviewLog.push(bad.reviewLog[0]);
+    bad.counts.reviewLog += 1;
+    expect(() => validateBackup(bad)).toThrow(/twice/);
+  });
+
+  it('rejects ratings and times the scheduler cannot use', async () => {
+    for (const [field, value] of [['rating', 0], ['rating', '3'], ['ts', null], ['ts', Infinity]] as const) {
+      const bad = await file();
+      bad.reviewLog[0][field] = value;
+      expect(() => validateBackup(bad), `${field} ${String(value)}`).toThrow(BackupError);
+    }
+  });
+});

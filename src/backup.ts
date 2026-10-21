@@ -8,9 +8,9 @@
 // files can be merged in either order. Card state and daily totals are then
 // rebuilt by replaying the merged log, never copied from the file.
 
-import { DB_VERSION, STORES, type Db } from './db/db.ts';
+import { STORES, clearAll, transact, type Db } from './db/db.ts';
 import { localZone, studyDay, type Zone } from './day.ts';
-import { LOG_FIELDS, buildDaily, replay, type LogRow } from './log.ts';
+import { LOG_FIELDS, LOG_KINDS, LOG_V, MANUAL_ACTIONS, buildDaily, replay, type LogRow } from './log.ts';
 import type { CardState, Params } from './scheduler.ts';
 
 export const BACKUP_FORMAT = 'corvus-backup';
@@ -37,17 +37,17 @@ export interface Backup {
 /** The whole database as a backup, read in one transaction so it is consistent. */
 export async function buildExport(db: Db, opts: { now: number; buildId: string }): Promise<Backup> {
   return db.read(async (conn) => {
-    const tx = conn.transaction(STORES, 'readonly');
-    const states = tx.objectStore('cardState');
-    const [reviewLog, params, stateKeys, stateValues, settings, unlocked] = await Promise.all([
-      tx.objectStore('reviewLog').index('byTs').getAll(),
-      tx.objectStore('params').getAll(),
-      states.getAllKeys(),
-      states.getAll(),
-      tx.objectStore('meta').get('settings'),
-      tx.objectStore('meta').get('unlockedThrough'),
-    ]);
-    await tx.done;
+    const [reviewLog, params, stateKeys, stateValues, settings, unlocked] = await transact(conn, STORES, 'readonly', (tx) => {
+      const states = tx.objectStore('cardState');
+      return Promise.all([
+        tx.objectStore('reviewLog').index('byTs').getAll(),
+        tx.objectStore('params').getAll(),
+        states.getAllKeys(),
+        states.getAll(),
+        tx.objectStore('meta').get('settings'),
+        tx.objectStore('meta').get('unlockedThrough'),
+      ]);
+    });
     const cardStates = Object.fromEntries(stateKeys.map((k, i) => [k, stateValues[i]!]));
     return {
       format: BACKUP_FORMAT,
@@ -82,15 +82,23 @@ export class BackupError extends Error {
   }
 }
 
-const KINDS = new Set(['review', 'undo', 'manual']);
-const ACTIONS = new Set(['suspend', 'unsuspend', 'flag', 'unflag', 'forget']);
+const KINDS = new Set<string>(LOG_KINDS);
+const ACTIONS = new Set<string>(MANUAL_ACTIONS);
+const PHASES = new Set(['learning', 'review', 'relearning']);
+const STATE_NUMBERS = ['due', 'lastReview', 'stability', 'difficulty', 'scheduledDays', 'learningSteps', 'reps', 'lapses'];
 const isObject = (x: unknown): x is Record<string, unknown> => typeof x === 'object' && x !== null && !Array.isArray(x);
+const isNumber = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
+
+function isCardState(x: unknown): x is CardState {
+  return isObject(x) && PHASES.has(x.phase as string) && STATE_NUMBERS.every((k) => isNumber(x[k]));
+}
 
 /**
- * Check a parsed file before anything is written. It checks the shape the
- * merge depends on: the format and version, every log field on every row,
- * and a config for every review. It doesn't re-check values the app wrote
- * (ratings, states) beyond their type.
+ * Check a parsed file before anything is written, so a bad file is refused
+ * with a reason instead of failing halfway through the import. It checks the
+ * format and version, every log field on every row, that no row appears
+ * twice, the values replay depends on (ratings, times, shifts, states), and
+ * a config for every review.
  */
 export function validateBackup(data: unknown): Backup {
   const fail = (why: string): never => {
@@ -110,22 +118,37 @@ export function validateBackup(data: unknown): Backup {
     if (!Number.isInteger(n)) fail(`unlockedThrough.${lang} is not a lesson number`);
   }
 
+  for (const [id, s] of Object.entries(d.cardStates as object)) {
+    if (!isCardState(s)) fail(`the state of card ${id} is malformed`);
+  }
+
   const paramIds = new Set<string>();
   for (const p of d.params as unknown[]) {
-    if (!isObject(p) || typeof p.id !== 'string' || !Array.isArray(p.w)) fail('a scheduler config is malformed');
+    if (!isObject(p) || typeof p.id !== 'string' || !Array.isArray(p.w) || !p.w.every(isNumber) || !isNumber(p.retention)) {
+      fail('a scheduler config is malformed');
+    }
     paramIds.add((p as Params).id);
   }
+  const ids = new Set<string>();
   for (const [i, r] of log.entries()) {
     if (!isObject(r)) fail(`log row ${i} is not an object`);
     const row = r as Record<string, unknown>;
     const missing = LOG_FIELDS.filter((f) => !(f in row));
     if (missing.length) fail(`log row ${i} lacks ${missing.join(', ')}`);
-    if (row.v !== 1) fail(`log row ${i} has row version ${String(row.v)}`);
-    if (typeof row.id !== 'string' || typeof row.cardId !== 'string' || typeof row.ts !== 'number') {
-      fail(`log row ${i} has a malformed id, card or time`);
+    if (row.v !== LOG_V) fail(`log row ${i} has row version ${String(row.v)}`);
+    if (typeof row.id !== 'string' || typeof row.cardId !== 'string' || typeof row.studyDay !== 'string') {
+      fail(`log row ${i} has a malformed id, card or day`);
     }
+    if (ids.has(row.id as string)) fail(`log row ${String(row.id)} appears twice`);
+    ids.add(row.id as string);
+    if (!isNumber(row.ts) || !isNumber(row.shiftMin)) fail(`log row ${i} has a malformed time or shift`);
     if (!KINDS.has(row.kind as string)) fail(`log row ${i} has unknown kind ${String(row.kind)}`);
-    if (row.kind === 'review' && !paramIds.has(row.paramsId as string)) fail(`log row ${i} uses a config the file lacks`);
+    if (row.kind === 'review') {
+      if (![1, 2, 3, 4].includes(row.rating as number)) fail(`log row ${i} has rating ${String(row.rating)}`);
+      if (!isNumber(row.totalMs)) fail(`log row ${i} has a malformed time taken`);
+      if (row.before !== null && !isCardState(row.before)) fail(`log row ${i} has a malformed before state`);
+      if (!paramIds.has(row.paramsId as string)) fail(`log row ${i} uses a config the file lacks`);
+    }
     if (row.kind === 'undo' && typeof row.undoes !== 'string') fail(`undo row ${i} names no row`);
     if (row.kind === 'manual' && !ACTIONS.has(row.action as string)) fail(`manual row ${i} has unknown action`);
   }
@@ -170,16 +193,14 @@ function sameState(a: CardState, b: CardState): boolean {
  * and daily totals are rebuilt from the resulting log, all in one transaction.
  */
 export async function importBackup(db: Db, backup: Backup, mode: 'merge' | 'replace' = 'merge'): Promise<ImportResult> {
-  return db.write(async (conn) => {
-    const tx = conn.transaction(STORES, 'readwrite');
+  const { added, states } = await db.write((conn) => transact(conn, STORES, 'readwrite', async (tx) => {
     const logStore = tx.objectStore('reviewLog');
     const paramStore = tx.objectStore('params');
     const meta = tx.objectStore('meta');
 
-    if (mode === 'replace') {
-      await Promise.all(STORES.map((s) => tx.objectStore(s).clear()));
-      await meta.put(DB_VERSION, 'dbVersion');
-    }
+    // If anything below throws (replay rejecting a row, say), transact
+    // aborts, and the wipe is rolled back with the rest.
+    if (mode === 'replace') await clearAll(tx);
     const [deviceRows, deviceParams, deviceUnlocked] = await Promise.all([
       logStore.getAll(),
       paramStore.getAll(),
@@ -208,16 +229,18 @@ export async function importBackup(db: Db, backup: Backup, mode: 'merge' | 'repl
       meta.put(unlocked, 'unlockedThrough'),
       ...(mode === 'replace' && backup.settings ? [meta.put(backup.settings, 'settings')] : []),
     ]);
-    await tx.done;
+    return { added: newRows.length, states };
+  }));
 
-    const differs = Object.entries(backup.cardStates)
-      .filter(([id, s]) => {
-        const rebuilt = states.get(id);
-        return !rebuilt || !sameState(rebuilt, s);
-      })
-      .map(([id]) => id);
-    return { added: newRows.length, differs };
-  });
+  // Outside the write: the import has committed, and nothing here should
+  // make it look as if it hadn't.
+  const differs = Object.entries(backup.cardStates)
+    .filter(([id, s]) => {
+      const rebuilt = states.get(id);
+      return !rebuilt || !sameState(rebuilt, s);
+    })
+    .map(([id]) => id);
+  return { added, differs };
 }
 
 /** localStorage, or null where it is missing or reading it throws. */
@@ -237,12 +260,7 @@ function localStore(): Storage | null {
  * stale one) and would hang where emptying doesn't.
  */
 export async function reset(db: Db, storage: Pick<Storage, 'length' | 'key' | 'removeItem'> | null = localStore()): Promise<void> {
-  await db.write(async (conn) => {
-    const tx = conn.transaction(STORES, 'readwrite');
-    await Promise.all(STORES.map((s) => tx.objectStore(s).clear()));
-    await tx.objectStore('meta').put(DB_VERSION, 'dbVersion');
-    await tx.done;
-  });
+  await db.write((conn) => transact(conn, STORES, 'readwrite', clearAll));
   if (!storage) return;
   const keys: string[] = [];
   for (let i = 0; i < storage.length; i++) {
