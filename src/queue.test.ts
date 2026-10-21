@@ -275,6 +275,24 @@ describe('Session', () => {
     expect(s.next(states, NOW)).toBe('b');
   });
 
+  it('never shows a skipped card again, whether planned, undone or learning', () => {
+    const states = new Map<string, CardState>([['c', state('learning', NOW - MIN, NOW - 11 * MIN)]]);
+    const s = start(states);
+    // c is a learning card due now, so it comes first; skip it.
+    expect(s.next(states, NOW)).toBe('c');
+    s.skip('c');
+    expect(s.next(states, NOW)).toBe('a');
+    s.answered('a');
+    states.set('a', state('review', NOW + 3 * DAY, NOW));
+    states.delete('a');
+    s.undone('a');
+    s.skip('a');
+    expect(s.next(states, NOW)).toBe('b');
+    s.skip('b');
+    expect(s.next(states, NOW)).toBeNull();
+    expect(s.remaining).toBe(0);
+  });
+
   it('never shows a retired learning card', () => {
     const retired = loadCards([file(1, [vocab('a', { retired: true }), vocab('b')])]);
     const states = new Map<string, CardState>([['a', state('learning', NOW - MIN, NOW - 11 * MIN)]]);

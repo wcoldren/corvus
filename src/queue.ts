@@ -153,6 +153,8 @@ export class Session {
   #pending: PlanEntry[];
   /** Undone cards, shown before anything else, most recently undone first. */
   #front: string[] = [];
+  /** Cards that failed to render or check; never shown again this session. */
+  #skipped = new Set<string>();
   #cards: ReadonlyMap<string, Card>;
   #learnAheadMs: number;
 
@@ -196,6 +198,17 @@ export class Session {
     this.#front = [id, ...this.#front.filter((f) => f !== id)];
   }
 
+  /**
+   * Leave a card out for the rest of the session without answering it: one
+   * that threw while being shown or checked (SPEC.md, Recovery). It keeps
+   * its state, so it comes back in a later session.
+   */
+  skip(id: string): void {
+    this.#skipped.add(id);
+    this.#front = this.#front.filter((f) => f !== id);
+    this.#pending = this.#pending.filter((e) => e.id !== id);
+  }
+
   /** Planned cards not yet shown, for "cards left". Learning steps come on top of these. */
   get remaining(): number {
     return this.#front.length + this.#pending.length;
@@ -204,7 +217,7 @@ export class Session {
   #learningByDue(states: ReadonlyMap<string, CardState>): { id: string; due: number }[] {
     const out: { id: string; due: number }[] = [];
     for (const [id, s] of states) {
-      if (isLearning(s) && this.#cards.has(id)) out.push({ id, due: s.due });
+      if (isLearning(s) && this.#cards.has(id) && !this.#skipped.has(id)) out.push({ id, due: s.due });
     }
     return out.sort((a, b) => a.due - b.due || (a.id < b.id ? -1 : 1));
   }
