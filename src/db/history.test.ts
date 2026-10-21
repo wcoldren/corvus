@@ -5,7 +5,7 @@ import { answerRow, buildDaily, replay, type Answer, type LogRow } from '../log.
 import { DEFAULT_PARAMS, type Rating } from '../scheduler.ts';
 import { wall, zone } from '../testing/zones.ts';
 import { Db } from './db.ts';
-import { getState, recordReview, recordUndo } from './history.ts';
+import { CardChangedError, getState, recordReview, recordUndo } from './history.ts';
 
 const ny = zone('America/New_York');
 const MIN = 60_000;
@@ -155,7 +155,7 @@ describe('recordUndo', () => {
     const db = fresh();
     const mine = await answer(db, 'a', 1, t0, 's1');
     await answer(db, 'a', 3, t0 + 11 * MIN, 'other-tab');
-    await expect(recordUndo(db, 's1', mine.row.studyDay, ctx(t0 + 12 * MIN))).rejects.toThrow(/rebuild/);
+    await expect(recordUndo(db, 's1', mine.row.studyDay, ctx(t0 + 12 * MIN))).rejects.toThrow(CardChangedError);
     expect((await dump(db)).reviewLog).toHaveLength(2);
     db.close();
   });
@@ -183,6 +183,41 @@ describe('stored state against replay', () => {
     const replayed = replay(d.reviewLog as LogRow[], new Map(d.params.map((p) => [p.id, p])));
     expect(Object.fromEntries(replayed)).toEqual(d.states);
     expect(d.daily).toEqual(buildDaily(d.reviewLog));
+    db.close();
+  });
+});
+
+describe('code review findings (2026-10-20)', () => {
+  it('refuses a second answer built from the same before state', async () => {
+    const db = fresh();
+    const t = wall(ny, '2026-06-10T09:00');
+    const first = answerRow(card('a'), null, ans(3), DEFAULT_PARAMS, ctx(t));
+    const double = answerRow(card('a'), null, ans(3), DEFAULT_PARAMS, ctx(t + 500));
+    await recordReview(db, first.row, first.after, DEFAULT_PARAMS);
+    await expect(recordReview(db, double.row, double.after, DEFAULT_PARAMS)).rejects.toThrow(CardChangedError);
+    expect((await dump(db)).reviewLog).toHaveLength(1);
+    db.close();
+  });
+
+  it('undoes the last answer given, even after the clock went backwards', async () => {
+    const db = fresh();
+    const ten = wall(ny, '2026-06-10T10:00');
+    await answer(db, 'a', 1, ten, 'earlier');
+    const nine = wall(ny, '2026-06-10T09:00');
+    await answer(db, 'a', 3, nine, 's1'); // clamped to 10:00:01
+    const b = await answer(db, 'b', 3, nine + 30_000, 's1'); // 09:00:30
+    expect(await recordUndo(db, 's1', b.row.studyDay, ctx(nine + 60_000))).toEqual(b.row);
+    db.close();
+  });
+
+  it('keeps walking back when the undos fall after the rollover', async () => {
+    const db = fresh();
+    const t = wall(ny, '2026-06-11T03:50');
+    const one = await answer(db, 'a', 3, t);
+    const two = await answer(db, 'b', 3, t + 5 * MIN);
+    const day = one.row.studyDay;
+    expect(await recordUndo(db, 's1', day, ctx(wall(ny, '2026-06-11T04:01')))).toEqual(two.row);
+    expect(await recordUndo(db, 's1', day, ctx(wall(ny, '2026-06-11T04:02')))).toEqual(one.row);
     db.close();
   });
 });

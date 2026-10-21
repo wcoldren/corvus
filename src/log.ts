@@ -174,10 +174,15 @@ export function answerRow(
   return { row, after: review(params, before, answer.rating, ts, row.shiftMin) };
 }
 
-/** The row that undoes a review. Its time is the clock's, unclamped. */
+/**
+ * The row that undoes a review. Its time is the clock's, unclamped. It is
+ * filed under the undone answer's study day, the day whose totals it changes,
+ * so a later undo in the same session finds it even after the rollover.
+ */
 export function undoRow(target: ReviewRow, ctx: RowContext): UndoRow {
   return {
     ...base(target.cardId, ctx.now, ctx),
+    studyDay: target.studyDay,
     kind: 'undo',
     ...NO_REVIEW,
     undoes: target.id,
