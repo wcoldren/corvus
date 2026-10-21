@@ -50,7 +50,51 @@ const MIGRATIONS: ((db: Conn, tx: UpgradeTx) => void)[] = [
 
 export const DB_VERSION = MIGRATIONS.length;
 
-/** Thrown when a write failed, was retried on a fresh connection, and failed again. */
+type Tx<Mode extends IDBTransactionMode> = IDBPTransaction<CorvusSchema, StoreNames<CorvusSchema>[], Mode>;
+
+/**
+ * Run `body` in one transaction and wait for it to commit. If `body` throws,
+ * the transaction is aborted, so nothing it wrote commits. Without this, an
+ * error thrown by our own code between requests (a replay that rejects a
+ * row, say) leaves the transaction to commit whatever it had already done.
+ */
+export async function transact<T, Mode extends IDBTransactionMode>(
+  conn: Conn,
+  stores: readonly StoreNames<CorvusSchema>[],
+  mode: Mode,
+  body: (tx: Tx<Mode>) => Promise<T>,
+): Promise<T> {
+  const tx = conn.transaction([...stores], mode) as Tx<Mode>;
+  try {
+    const result = await body(tx);
+    await tx.done;
+    return result;
+  } catch (e) {
+    try {
+      tx.abort();
+    } catch {
+      // Already finished or aborted.
+    }
+    await tx.done.catch(() => {});
+    throw e;
+  }
+}
+
+/** Empty every store, leaving the database as a fresh one would be. */
+export async function clearAll(tx: Tx<'readwrite'>): Promise<void> {
+  await Promise.all(STORES.map((s) => tx.objectStore(s).clear()));
+  await tx.objectStore('meta').put(DB_VERSION, 'dbVersion');
+}
+
+/**
+ * Errors that mean the connection went away (iPadOS closing a backgrounded
+ * app's connection shows up as one of these), so a fresh one may succeed.
+ */
+const CONNECTION_LOST = new Set(['InvalidStateError', 'UnknownError', 'AbortError']);
+const isDbError = (e: unknown): e is DOMException => e instanceof DOMException;
+const isConnectionLost = (e: unknown) => isDbError(e) && CONNECTION_LOST.has(e.name);
+
+/** Thrown when the database refused a write, or a lost connection failed again on a fresh one. */
 export class NotSavedError extends Error {
   constructor(cause: unknown) {
     super('Not saved. Reload.', { cause });
@@ -110,31 +154,34 @@ export class Db {
     void conn?.then((c) => c.close(), () => {});
   }
 
-  /** Run a read, reopening once if the connection has gone. */
-  async read<T>(fn: (db: Conn) => Promise<T>): Promise<T> {
+  /** Run `fn`, and once more on a fresh connection if the first one was lost. */
+  async #withReopen<T>(fn: (db: Conn) => Promise<T>): Promise<T> {
     try {
       return await fn(await this.conn());
-    } catch {
+    } catch (e) {
+      if (!isConnectionLost(e)) throw e;
       this.close();
       return fn(await this.conn());
     }
   }
 
+  read<T>(fn: (db: Conn) => Promise<T>): Promise<T> {
+    return this.#withReopen(fn);
+  }
+
   /**
-   * Run a write. If it fails, drop the connection, reopen, and run it once
-   * more with the same arguments, so `fn` must be safe to repeat. If that
-   * fails too, throw NotSavedError for the "Not saved. Reload." banner.
+   * Run a write. A lost connection is reopened and the write run once more
+   * with the same arguments, so `fn` must be safe to repeat. Any database
+   * error left after that becomes NotSavedError, for the "Not saved. Reload."
+   * banner. Errors from our own code (a bug, a deliberate refusal) are not
+   * retried and pass through unchanged, since retrying or reloading can't
+   * fix them.
    */
   async write<T>(fn: (db: Conn) => Promise<T>): Promise<T> {
     try {
-      return await fn(await this.conn());
-    } catch {
-      this.close();
-      try {
-        return await fn(await this.conn());
-      } catch (e) {
-        throw new NotSavedError(e);
-      }
+      return await this.#withReopen(fn);
+    } catch (e) {
+      throw isDbError(e) ? new NotSavedError(e) : e;
     }
   }
 }

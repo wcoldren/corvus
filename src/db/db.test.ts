@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it, vi } from 'vitest';
 import { openDB } from 'idb';
-import { DB_VERSION, Db, NotSavedError, STORES } from './db.ts';
+import { DB_VERSION, Db, NotSavedError, STORES, transact } from './db.ts';
 
 let n = 0;
 const fresh = (opts: ConstructorParameters<typeof Db>[0] = {}) => new Db({ name: `db-test-${++n}`, ...opts });
@@ -41,13 +41,44 @@ describe('the connection', () => {
 
   it('gives up after one retry with NotSavedError', async () => {
     const db = fresh();
+    const lost = new DOMException('Connection to Indexed Database server lost', 'UnknownError');
     const fn = vi.fn(async () => {
-      throw new Error('disk full');
+      throw lost;
     });
     const err = await db.write(fn).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(NotSavedError);
-    expect((err as NotSavedError).cause).toEqual(new Error('disk full'));
+    expect((err as NotSavedError).cause).toBe(lost);
     expect(fn).toHaveBeenCalledTimes(2);
+    db.close();
+  });
+
+  it('does not retry an error a fresh connection would not fix', async () => {
+    const db = fresh();
+    const full = vi.fn(async () => {
+      throw new DOMException('quota', 'QuotaExceededError');
+    });
+    expect(await db.write(full).catch((e: unknown) => e)).toBeInstanceOf(NotSavedError);
+    expect(full).toHaveBeenCalledOnce();
+    // Our own errors are not database failures: no retry, no "Not saved".
+    const bug = vi.fn(async () => {
+      throw new TypeError('bug');
+    });
+    await expect(db.write(bug)).rejects.toThrow(TypeError);
+    expect(bug).toHaveBeenCalledOnce();
+    db.close();
+  });
+
+  it('rolls back a transaction whose body throws between requests', async () => {
+    const db = fresh();
+    await db.write((conn) => conn.put('meta', 'kept', 'probe'));
+    const failing = db.write((conn) =>
+      transact(conn, ['meta'], 'readwrite', async (tx) => {
+        await tx.objectStore('meta').clear();
+        throw new Error('replay rejected a row');
+      }),
+    );
+    await expect(failing).rejects.toThrow('replay rejected a row');
+    expect(await db.read((conn) => conn.get('meta', 'probe'))).toBe('kept');
     db.close();
   });
 
