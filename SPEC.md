@@ -398,10 +398,11 @@ It also prints each file's instance count and estimated seconds, and the cumulat
   - Export, import and Reset.
   - The Safari-tab banner, `storage.persist()`, the export reminder and the clock warning.
   - The service worker and update flow, hash routing, the recovery screen, the deploy gate, and the device checklist.
+  - The key bar and keyboard flow, so typed answers with marks work on the iPad from the first session.
 - **M1b: Session quality.**
   - The time-budget limiter, "Learn 5 more", the review-day advisory, and the backlog and forecast lines on Home.
   - Review ordering and sibling spacing.
-  - The key bar and keyboard flow, and the display rules.
+  - The display rules.
 - **M2: Full card types and tools.**
   - The parse grid, reverse cards, the letter diff, and speech.
   - Browse, the rest of Settings, and leeches, flags and suspend.
