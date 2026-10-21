@@ -24,6 +24,20 @@ export const NEW_EVERY = 4;
 export type Unlocked = Record<string, number>;
 
 /**
+ * The lesson Home offers to unlock: the lowest deployed lesson above the one
+ * unlocked so far, or null when every deployed lesson is unlocked. Lesson
+ * numbers can skip, so it is looked up rather than added to.
+ */
+export function lessonToUnlock(cards: readonly Card[], unlocked: Unlocked, language: string): number | null {
+  const through = unlocked[language] ?? 0;
+  let next: number | null = null;
+  for (const c of cards) {
+    if (c.language === language && c.lesson > through && (next === null || c.lesson < next)) next = c.lesson;
+  }
+  return next;
+}
+
+/**
  * Whether a card can be shown at all. Retired cards keep their history but
  * leave every queue. Parse cards and `~r` cards wait for M2 (grid answers,
  * the sibling rule), and until then never get review state.
