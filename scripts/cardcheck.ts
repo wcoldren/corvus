@@ -153,7 +153,10 @@ export function checkCorpus(input: CorpusInput): CorpusResult {
     // Rule 8: a typed card's own answers grade correct through the real checker.
     if (pack && !c.retired && c.mode === 'typed' && typeof c.answer === 'string') {
       for (const a of [c.answer, ...c.accept]) {
-        for (const alt of expandAlternatives(a)) {
+        const alts = expandAlternatives(a);
+        // Otherwise the loop below checks nothing and the card passes.
+        if (alts.length === 0) fails.push(`${where(c)}: "${a}" leaves no answer to type`);
+        for (const alt of alts) {
           const v = checkTyped(c, alt, { ignoreWords: pack.learner.ignoreWords, forms });
           if (v.kind !== 'correct') fails.push(`${where(c)}: its own answer "${alt}" grades as ${v.kind}`);
         }

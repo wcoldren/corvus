@@ -115,6 +115,7 @@ const cases: Case[] = [
   ['parse card without a lemma', true, (i) => delete X(i).lemma, 'needs a lemma'],
   // --- rule 8: self-check
   ['an answer that grades wrong against itself', true, (i) => (E(i).answer = '?!'), 'grades as wrong'],
+  ['an accept entry with nothing to type', true, (i) => (E(i).accept = ['/']), 'leaves no answer'],
   // --- rule 10
   ['an epoch file before the registry check exists', true, (i) => (i.epoch = true), 'rule 10'],
 ];

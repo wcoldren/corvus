@@ -48,6 +48,8 @@ describe('fold and expandAlternatives', () => {
     expect(expandAlternatives('he/she/it loves')).toEqual(['he loves', 'she loves', 'it loves']);
     expect(expandAlternatives('by/with the/a hand')).toHaveLength(4);
     expect(expandAlternatives('water')).toEqual(['water']);
+    expect(expandAlternatives('he / she loves')).toEqual(['he loves', 'she loves']);
+    expect(expandAlternatives('/')).toEqual([]);
   });
 });
 
