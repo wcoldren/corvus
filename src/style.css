@@ -334,3 +334,49 @@ input.target {
   font-family: var(--font-target);
   font-size: max(22px, 1.25rem);
 }
+
+/* Settings. */
+button.danger {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.error {
+  color: var(--bad);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.3rem 1rem;
+  margin: 0;
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+details summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.errors li {
+  margin: 0.3rem 0;
+  overflow-wrap: anywhere;
+}
+
+input[type='file'] {
+  font: inherit;
+  min-height: 44px;
+}
