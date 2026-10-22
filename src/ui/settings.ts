@@ -21,6 +21,7 @@ import { formatWhen } from './share.ts';
 import { routeHash } from './router.ts';
 
 const UPDATE_RESULT: Record<CheckResult, string> = {
+  ready: 'A new version is ready. It loads when you return to Home.',
   found: 'Downloading a new version. It loads when you return to Home.',
   current: 'This is the newest version.',
   failed: 'Could not check for updates. Is this device offline?',

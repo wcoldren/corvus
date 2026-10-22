@@ -16,7 +16,8 @@ export interface NewVersion {
   newestLesson: number | null;
 }
 
-export type CheckResult = 'found' | 'current' | 'failed' | 'off';
+/** 'ready': a new version already controls the page. 'found': one is installing. */
+export type CheckResult = 'ready' | 'found' | 'current' | 'failed' | 'off';
 
 export interface Updates {
   /** Ask for a new version now, whenever the last check was. */
@@ -76,7 +77,8 @@ export function startUpdates(): Updates {
     try {
       const reg = await registration;
       await reg.update();
-      return ready || reg.installing || reg.waiting ? 'found' : 'current';
+      if (ready) return 'ready';
+      return reg.installing || reg.waiting ? 'found' : 'current';
     } catch {
       // Offline, most likely. Forget this try, so the next resume tries
       // again instead of waiting out the spacing.
