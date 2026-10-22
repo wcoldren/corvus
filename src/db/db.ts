@@ -118,6 +118,8 @@ export class Db {
   readonly bus: Bus;
   #onBlocking: () => void;
   #conn: Promise<Conn> | null = null;
+  /** Writes that have not settled yet, for idle(). */
+  #writing = new Set<Promise<unknown>>();
 
   constructor(opts: DbOptions = {}) {
     this.name = opts.name ?? DB_NAME;
@@ -176,11 +178,29 @@ export class Db {
    * retried and pass through unchanged, since retrying or reloading can't
    * fix them.
    */
-  async write<T>(fn: (db: Conn) => Promise<T>): Promise<T> {
-    try {
-      return await this.#withReopen(fn);
-    } catch (e) {
+  write<T>(fn: (db: Conn) => Promise<T>): Promise<T> {
+    const write = this.#withReopen(fn).catch((e: unknown) => {
       throw isDbError(e) ? new NotSavedError(e) : e;
+    });
+    this.#writing.add(write);
+    write.then(
+      () => this.#writing.delete(write),
+      () => this.#writing.delete(write),
+    );
+    return write;
+  }
+
+  /**
+   * Resolves once no write is running. A reload for a new version waits on
+   * this, so it never cuts off a save (SPEC.md, Updates).
+   */
+  async idle(): Promise<void> {
+    for (;;) {
+      await Promise.allSettled([...this.#writing]);
+      // A write queue (the review run's) starts its next write from the last
+      // one's promise callback. Waiting a task lets that start before looking.
+      await new Promise((r) => setTimeout(r, 0));
+      if (this.#writing.size === 0) return;
     }
   }
 }

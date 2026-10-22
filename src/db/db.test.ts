@@ -92,3 +92,29 @@ describe('the connection', () => {
     newer.close();
   });
 });
+
+describe('idle', () => {
+  it('waits for a queue of writes, including one started after the last finished', async () => {
+    const db = fresh();
+    const done: string[] = [];
+    const put = (key: string) => db.write(async (c) => {
+      await c.put('meta', key, key);
+      done.push(key);
+    });
+    // Chained the way the review run queues its saves.
+    void put('a').then(() => put('b'));
+    await db.idle();
+    expect(done).toEqual(['a', 'b']);
+    db.close();
+  });
+
+  it('settles when a write fails', async () => {
+    const db = fresh();
+    const failed = db.write(async () => {
+      throw new Error('refused');
+    });
+    await expect(failed).rejects.toThrow('refused');
+    await db.idle();
+    db.close();
+  });
+});
