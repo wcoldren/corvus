@@ -20,5 +20,7 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "scripts", "vite.config.ts"]
+  "include": ["src", "scripts", "vite.config.ts"],
+  // Checked with its own globals: src/sw/tsconfig.json.
+  "exclude": ["src/sw/worker.ts"]
 }

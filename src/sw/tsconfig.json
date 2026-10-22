@@ -1,0 +1,16 @@
+{
+  // The service worker runs with a worker's globals, not a page's, so it is
+  // checked on its own. It is a plain script (no imports or exports): the
+  // build compiles it alone and the browser loads it as a classic worker.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "WebWorker"],
+    "types": [],
+    "noEmit": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "erasableSyntaxOnly": true
+  },
+  "files": ["worker.ts"]
+}

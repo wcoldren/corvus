@@ -1,5 +1,6 @@
 import { execSync } from 'node:child_process';
 import { defineConfig, type Plugin } from 'vite';
+import { serviceWorker } from './scripts/service-worker.ts';
 
 /**
  * The build id shown in Settings and logged with every review: the commit
@@ -36,8 +37,10 @@ function contentSecurityPolicy(): Plugin {
 
 // The site is served from https://<user>.github.io/corvus/, so every URL is
 // built from this base (import.meta.env.BASE_URL in the app).
+const id = buildId();
+
 export default defineConfig({
   base: '/corvus/',
-  define: { __BUILD_ID__: JSON.stringify(buildId()) },
-  plugins: [contentSecurityPolicy()],
+  define: { __BUILD_ID__: JSON.stringify(id) },
+  plugins: [contentSecurityPolicy(), serviceWorker(id)],
 });
