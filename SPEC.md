@@ -286,7 +286,7 @@ The database version only goes up, through one migration per step, each with a t
 
 ### Build and identity
 
-- Card files and language packs are bundled at build time with `import.meta.glob('/cards/lesson-*.json', { eager: true })`, and packs with `import.meta.glob(['/languages/*.json', '!/languages/schema.json'], { eager: true })`. A static site can't list a directory at runtime, and bundling puts the cards inside the precache. The build also writes `ids.json`, every card id including `~r` ids, for check-cards rule 10.
+- Card files and language packs are bundled at build time with `import.meta.glob('/cards/lesson-*.json', { eager: true })`, and packs with `import.meta.glob(['/languages/*.json', '!/languages/schema.json'], { eager: true })`. A static site can't list a directory at runtime, and bundling puts the cards inside the precache. The build also writes `ids.json`, every card id including `~r` ids, for check-cards rule 10, and `version.json`, the build id and newest lesson, for the update notice.
 - Vite `base` is `/corvus/`, and every URL is built from `import.meta.env.BASE_URL`.
 - Manifest: `id`, `start_url` and `scope` all `/corvus/`, `display: standalone`, name and short_name "Corvus", and a simple, original raven icon (a 180 px apple-touch icon, 192 and 512 px icons, and a maskable one). The viewport meta includes `viewport-fit=cover`.
 - The base path, the manifest identity and the icon are frozen before the first install. Whether to use a custom domain is decided before the epoch. After that the origin is as permanent as the card ids, and moving it takes an export and an import.
@@ -295,9 +295,9 @@ The database version only goes up, through one migration per step, each with a t
 ### Service worker
 
 - Hand-written, about a page of code, with no Workbox. It is registered only in production builds, so development never caches.
-- The cache is named `corvus-<build hash>`, and a short post-build script lists the files to precache from Vite's build manifest. Install fetches with `cache: 'reload'` and calls `skipWaiting()`. Activate deletes only stale `corvus-*` caches and claims clients.
+- The cache is named `corvus-<build hash>`, and a short post-build step (`scripts/service-worker.ts`) lists every file of the build to precache, except `sw.js` and `ids.json`. The hash covers those files and the worker's code. Install fetches with `cache: 'reload'` and calls `skipWaiting()`. Activate deletes only stale `corvus-*` caches and claims clients.
 - Every navigation in scope gets the precached `index.html`, online or offline, since GitHub Pages has no rewrite to it.
-- **Updates**: "on the next launch" is not reliable for a Home Screen app on iPadOS, which often resumes instead of launching. So the app calls `registration.update()` at start and whenever it becomes visible, at most once every 10 minutes. When a new worker takes control, the app reloads straight away if it is on Home with no session open. Otherwise it shows "New version ready (cards through Lesson N): it loads when this session ends" and reloads after the session.
+- **Updates**: "on the next launch" is not reliable for a Home Screen app on iPadOS, which often resumes instead of launching. So the app calls `registration.update()` at start and whenever it becomes visible, at most once every 10 minutes. When a new worker takes control, the app reloads straight away if it is on Home with no session open. Otherwise it shows "New version ready (cards through Lesson N): it loads when you return to Home" and reloads on the next visit to Home, once every save has finished.
 
 ### iPad facts the design depends on
 
