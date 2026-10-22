@@ -10,6 +10,8 @@
 import { recordError } from '../errors.ts';
 
 export interface NewVersion {
+  /** The new build's id, or null if it couldn't be read. */
+  buildId: string | null;
   /** The new build's newest lesson, or null if it couldn't be read. */
   newestLesson: number | null;
 }
@@ -35,10 +37,13 @@ const off: Updates = {
 async function readVersion(base: string): Promise<NewVersion> {
   try {
     const res = await fetch(`${base}version.json`, { cache: 'no-store' });
-    const v = (await res.json()) as { newestLesson?: unknown };
-    return { newestLesson: typeof v.newestLesson === 'number' ? v.newestLesson : null };
+    const v = (await res.json()) as { buildId?: unknown; newestLesson?: unknown };
+    return {
+      buildId: typeof v.buildId === 'string' ? v.buildId : null,
+      newestLesson: typeof v.newestLesson === 'number' ? v.newestLesson : null,
+    };
   } catch {
-    return { newestLesson: null };
+    return { buildId: null, newestLesson: null };
   }
 }
 
@@ -52,15 +57,14 @@ export function startUpdates(): Updates {
 
   let ready: NewVersion | null = null;
   let listener: ((version: NewVersion) => void) | null = null;
-  // The first worker also takes control of the page that installed it, but
-  // that is an install, not a new version.
-  let controlled = container.controller !== null;
   container.addEventListener('controllerchange', () => {
-    if (!controlled) {
-      controlled = true;
-      return;
-    }
     void readVersion(base).then((v) => {
+      // The first worker also takes control of the page that installed it.
+      // That is an install, not a new version, unless a deploy landed while
+      // it installed and the worker holds a newer build than this page's. A
+      // version that can't be read counts as new: a needless reload at Home
+      // costs less than a page left running files that are gone.
+      if (v.buildId === __BUILD_ID__) return;
       ready = v;
       listener?.(v);
     });
