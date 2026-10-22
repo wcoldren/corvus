@@ -3,13 +3,11 @@
 // through dump.ts, so a broken app module can't take the export down with it.
 // Nothing here writes to the database.
 
-import { recordError } from '../errors.ts';
+import { describeError, recordError } from '../errors.ts';
 import { dumpDatabase, openExisting } from '../dump.ts';
 import { h, replace } from './dom.ts';
 import { SAFARI_TAB_WARNING, isSafariTab } from './safari.ts';
 import { backupFile, filePanel } from './share.ts';
-
-declare const __BUILD_ID__: string;
 
 /** Export a backup without opening the app's own database code. */
 async function exportBackup(): Promise<{ file: File; summary: string }> {
@@ -42,8 +40,6 @@ function reloadHome(): void {
   location.reload();
 }
 
-const describe = (e: unknown) => (e instanceof Error ? `${e.name}: ${e.message}` : String(e));
-
 export function showRecovery(root: HTMLElement, error: unknown): void {
   recordError(error);
   console.error(error);
@@ -51,7 +47,7 @@ export function showRecovery(root: HTMLElement, error: unknown): void {
   const say = (text: string) => (status.textContent = text);
   const fail = (e: unknown) => {
     recordError(e);
-    say(`That didn't work: ${describe(e)}`);
+    say(`That didn't work: ${describeError(e)}`);
   };
 
   const backup = filePanel({ label: 'Export data', build: exportBackup, saved: () => say('Backup saved.'), fail, notice: say });
@@ -78,7 +74,7 @@ export function showRecovery(root: HTMLElement, error: unknown): void {
     h('div', { class: 'screen' },
       h('div', { class: 'recovery stack', attrs: { role: 'alert' } },
         h('h1', { text: 'Corvus could not start' }),
-        h('p', { class: 'muted', text: describe(error) }),
+        h('p', { class: 'muted', text: describeError(error) }),
         h('p', { text: 'Your progress is still on this device. Export it first, before trying anything else. Never delete the app or clear website data to fix this: that deletes your progress.' }),
         backup.el,
         h('div', { class: 'row' }, h('button', { text: 'Reload', on: { click: reloadHome } }), clear),

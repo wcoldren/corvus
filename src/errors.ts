@@ -31,12 +31,17 @@ export function readErrors(storage: Store | null = store()): ErrorEntry[] {
   }
 }
 
+/** `Name: message` for an Error, as the log and the recovery screen show it. */
+export function describeError(error: unknown): string {
+  return error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+}
+
 /** Add an error, newest first, keeping the last MAX_ERRORS. Never throws. */
 export function recordError(error: unknown, now: number = Date.now(), storage: Store | null = store()): void {
   try {
     const entry: ErrorEntry = {
       ts: now,
-      message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+      message: describeError(error),
       stack: error instanceof Error ? (error.stack ?? null) : null,
     };
     storage?.setItem(ERRORS_KEY, JSON.stringify([entry, ...readErrors(storage)].slice(0, MAX_ERRORS)));

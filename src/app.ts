@@ -41,8 +41,6 @@ export interface Screen {
 
 export type ScreenFactory = (app: App) => Promise<Screen>;
 
-declare const __BUILD_ID__: string;
-
 /**
  * One deployment teaches one target language (SPEC.md, Core concepts), so
  * the language is whichever the bundled cards are in.
