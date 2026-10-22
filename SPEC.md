@@ -353,7 +353,7 @@ Failures:
 7. **Lemmas**: every vocab, ending and parse card has a `lemma`.
 8. **Self-check**: every typed card's own answer and `accept` entries grade correct through the app's real checker module.
 9. **Speech**: the pack's speech test vectors pass (also run by `npm test`).
-10. **Registry**, once `cards/epoch.json` exists: every id in the live site's `ids.json` is present in the new build. Retiring is fine; disappearing fails, and so does a missing `ids.json`. Before the epoch the rule is skipped, so cards can still be restructured. Recovery from a failure is restoring the card from git history.
+10. **Registry**, once `cards/epoch.json` exists: every id in the live site's `ids.json` is present in the new build. Retiring is fine; disappearing fails, and so does a missing `ids.json`. check-cards fetches it from the site named by `homepage` in `package.json`, or reads a saved copy given with `--registry <file>`, so after the epoch `npm run verify` needs the network. Before the epoch the rule is skipped, so cards can still be restructured. Recovery from a failure is restoring the card from git history.
 
 Warnings:
 
