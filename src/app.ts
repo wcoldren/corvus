@@ -3,6 +3,7 @@
 // outlives a screen: the hash route, the banners, and the resume handler.
 
 import { cards as allCards, packs } from './cards/bundle.ts';
+import { newestLesson } from './cards/load.ts';
 import type { Card } from './cards/types.ts';
 import { buildFormIndex, type FormIndex } from './check/answer.ts';
 import { localZone, type Zone } from './day.ts';
@@ -83,7 +84,7 @@ export class Shell {
       pack,
       forms: buildFormIndex(cards),
       buildId: __BUILD_ID__,
-      newestLesson: Math.max(0, ...cards.map((c) => c.lesson)),
+      newestLesson: newestLesson(cards),
       zone: localZone,
       updates,
       now: () => Date.now(),

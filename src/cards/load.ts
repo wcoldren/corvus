@@ -39,6 +39,14 @@ export function loadCards(files: CardFile[]): Card[] {
   return cards;
 }
 
+/**
+ * The highest lesson among `cards`, or 0 if there are none. Settings shows it
+ * for this build, and version.json carries it for the update notice.
+ */
+export function newestLesson(cards: readonly Card[]): number {
+  return Math.max(0, ...cards.map((c) => c.lesson));
+}
+
 function forwardCard(file: CardFile, c: CardJson, seq: number): Card {
   return {
     id: c.id,

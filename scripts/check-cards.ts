@@ -2,17 +2,10 @@
 // Validates the card files and language packs (SPEC.md, "Card validation").
 // Exits 1 on any failure; warnings are printed but don't fail.
 import { execFileSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { checkCorpus, type NamedFile } from './cardcheck.ts';
-
-const root = join(import.meta.dirname, '..');
-const readJson = (path: string): unknown => JSON.parse(readFileSync(path, 'utf8'));
-const jsonFiles = (dir: string, skip: string[]): NamedFile[] =>
-  readdirSync(join(root, dir))
-    .filter((n) => n.endsWith('.json') && !skip.includes(n))
-    .sort()
-    .map((name) => ({ name, data: readJson(join(root, dir, name)) }));
+import { jsonFiles, readJson, root } from './files.ts';
 
 function baseFiles(ref: string): NamedFile[] {
   const git = (...args: string[]) => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' });

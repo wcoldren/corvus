@@ -11,10 +11,9 @@ import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { transformWithOxc, type Plugin } from 'vite';
-import { loadCards } from '../src/cards/load.ts';
+import { loadCards, newestLesson } from '../src/cards/load.ts';
 import type { CardFile } from '../src/cards/types.ts';
-
-const root = join(import.meta.dirname, '..');
+import { jsonFiles, root } from './files.ts';
 
 /** Files the worker leaves to the network: itself, and what only CI reads. */
 const NOT_PRECACHED = new Set(['sw.js', 'ids.json']);
@@ -44,10 +43,9 @@ function walk(dir: string): string[] {
 
 /** The bundled cards, read the way src/cards/bundle.ts globs them. */
 function bundledCards() {
-  const dir = join(root, 'cards');
-  const files = readdirSync(dir)
-    .filter((n) => /^lesson-.*\.json$/u.test(n))
-    .map((n) => JSON.parse(readFileSync(join(dir, n), 'utf8')) as CardFile);
+  const files = jsonFiles('cards', [])
+    .filter((f) => /^lesson-.*\.json$/u.test(f.name))
+    .map((f) => f.data as CardFile);
   return loadCards(files);
 }
 
@@ -57,8 +55,8 @@ export function serviceWorker(buildId: string): Plugin {
     apply: 'build',
     generateBundle() {
       const cards = bundledCards();
-      const newestLesson = Math.max(0, ...cards.map((c) => c.lesson));
-      this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ buildId, newestLesson }) + '\n' });
+      const version = { buildId, newestLesson: newestLesson(cards) };
+      this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify(version) + '\n' });
       this.emitFile({ type: 'asset', fileName: 'ids.json', source: JSON.stringify(cards.map((c) => c.id).sort()) + '\n' });
     },
     // After everything is on disk, public/ included.
