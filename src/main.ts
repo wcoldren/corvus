@@ -4,6 +4,7 @@
 
 import './style.css';
 import { recordError } from './errors.ts';
+import { startUpdates } from './sw/updates.ts';
 import { showRecovery } from './ui/recovery.ts';
 
 addEventListener('error', (e) => recordError(e.error ?? e.message));
@@ -23,8 +24,9 @@ async function persistStorage(): Promise<void> {
 }
 
 void persistStorage();
+const updates = startUpdates();
 
 const root = document.querySelector<HTMLElement>('#app')!;
 import('./start.ts')
-  .then((m) => m.start(root))
+  .then((m) => m.start(root, updates))
   .catch((e: unknown) => showRecovery(root, e));

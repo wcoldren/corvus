@@ -1,6 +1,6 @@
 // Settings (SPEC.md, Screens: Settings): backup, import, Reset, rebuilding
 // the schedule, and what this build and this device are. The adjustable
-// settings arrive in M1b and M2; "Check for updates" with the service worker.
+// settings arrive in M1b and M2.
 
 import type { App, Screen } from '../app.ts';
 import {
@@ -13,11 +13,19 @@ import {
   type Backup,
 } from '../backup.ts';
 import { getLastExport } from '../db/meta.ts';
+import type { CheckResult } from '../sw/updates.ts';
 import { readErrors } from '../errors.ts';
 import { backupPanel, type BackupPanel } from './backup.ts';
 import { h, replace } from './dom.ts';
 import { formatWhen } from './share.ts';
 import { routeHash } from './router.ts';
+
+const UPDATE_RESULT: Record<CheckResult, string> = {
+  found: 'Downloading a new version. It loads when you return to Home.',
+  current: 'This is the newest version.',
+  failed: 'Could not check for updates. Is this device offline?',
+  off: 'Updates are off in development builds.',
+};
 
 /** A button that stays disabled until `word` is typed (SPEC.md, Import and reset). */
 function typedConfirm(word: string, label: string, action: (button: HTMLButtonElement) => void): HTMLElement {
@@ -164,6 +172,23 @@ export async function settingsScreen(app: App): Promise<Screen> {
     },
   });
 
+  // Check for updates (SPEC.md, Updates). The app checks by itself at start
+  // and on resume; this is for when a deploy has just gone out.
+  const updateStatus = h('p', { class: 'muted', attrs: { 'aria-live': 'polite' } });
+  const checkUpdates = h('button', {
+    text: 'Check for updates',
+    on: {
+      click: () => {
+        checkUpdates.disabled = true;
+        updateStatus.textContent = 'Checking…';
+        void app.updates.check().then((result) => {
+          checkUpdates.disabled = false;
+          updateStatus.textContent = UPDATE_RESULT[result];
+        });
+      },
+    },
+  });
+
   const errors = readErrors();
   const persistText =
     persisted === null ? 'unknown (this browser does not say)'
@@ -202,6 +227,8 @@ export async function settingsScreen(app: App): Promise<Screen> {
       orphaned > 0 && h('dt', { text: 'Orphaned cards' }),
       orphaned > 0 && h('dd', { text: `${orphaned}: history for cards this build no longer has. It is kept.` }),
     ),
+    checkUpdates,
+    updateStatus,
     errors.length > 0 &&
       h('details', { class: 'errors' },
         h('summary', { text: `Recent errors (${errors.length})` }),

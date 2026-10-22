@@ -3,6 +3,7 @@
 // lands in main.ts's catch and the recovery screen instead of a blank page.
 
 import { Shell } from './app.ts';
+import type { Updates } from './sw/updates.ts';
 import { homeScreen } from './ui/home.ts';
 import { reviewScreen } from './ui/review.ts';
 import { settingsScreen } from './ui/settings.ts';
@@ -18,10 +19,10 @@ function trackViewport(): void {
 }
 
 /** Resolves once the first screen is showing; rejects if startup failed. */
-export async function start(root: HTMLElement): Promise<void> {
+export async function start(root: HTMLElement, updates: Updates): Promise<void> {
   // `npm run build:startup-fail` makes the test build for acceptance
   // criterion 6. Vite drops this line from every other build.
   if (import.meta.env.MODE === 'startup-fail') throw new Error('This test build fails at startup on purpose.');
   trackViewport();
-  await new Shell(root, { home: homeScreen, review: reviewScreen, settings: settingsScreen }).start();
+  await new Shell(root, { home: homeScreen, review: reviewScreen, settings: settingsScreen }, updates).start();
 }

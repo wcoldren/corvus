@@ -9,6 +9,7 @@ import { localZone, type Zone } from './day.ts';
 import { Db, NotSavedError } from './db/db.ts';
 import { recordError } from './errors.ts';
 import type { LanguagePack } from './pack/types.ts';
+import type { NewVersion, Updates } from './sw/updates.ts';
 import { h, replace } from './ui/dom.ts';
 import { parseRoute, routeHash, type Route } from './ui/router.ts';
 import { SAFARI_TAB_WARNING, isSafariTab } from './ui/safari.ts';
@@ -24,6 +25,7 @@ export interface App {
   /** The highest lesson bundled in this build. */
   newestLesson: number;
   zone: Zone;
+  updates: Updates;
   now(): number;
   go(route: Route): void;
   /** A short message that fades: a skipped card, a saved backup. */
@@ -63,10 +65,12 @@ export class Shell {
   #current: Screen | null = null;
   #mounting = 0;
   #blocked = false;
+  /** A new version controls the page; Home reloads into it. */
+  #updated = false;
   /** Settles start(); null once a first screen has shown or startup failed. */
   #startup: { resolve: () => void; reject: (e: unknown) => void } | null = null;
 
-  constructor(root: HTMLElement, screens: Record<Route, ScreenFactory>) {
+  constructor(root: HTMLElement, screens: Record<Route, ScreenFactory>, updates: Updates) {
     this.#screens = screens;
     const { pack } = bundledLanguage();
     const cards = allCards.filter((c) => c.language === pack.code);
@@ -79,6 +83,7 @@ export class Shell {
       buildId: __BUILD_ID__,
       newestLesson: Math.max(0, ...cards.map((c) => c.lesson)),
       zone: localZone,
+      updates,
       now: () => Date.now(),
       go: (route) => {
         if (location.hash === routeHash(route)) void this.#mount();
@@ -109,8 +114,29 @@ export class Shell {
     addEventListener('pageshow', (e) => {
       if (e.persisted) this.#current?.resume?.();
     });
+    this.app.updates.onReady((v) => this.#onUpdate(v));
     void this.#mount();
     return started;
+  }
+
+  /**
+   * A new version has taken control (SPEC.md, Updates). Home has no session
+   * to lose, so it reloads at once; any other screen finishes first, and the
+   * next visit to Home reloads.
+   */
+  #onUpdate(v: NewVersion): void {
+    if (this.#blocked || this.#updated) return;
+    this.#updated = true;
+    if (parseRoute(location.hash) === 'home') return void this.#reload();
+    const cards = v.newestLesson === null ? '' : ` (cards through Lesson ${v.newestLesson})`;
+    this.#banners.append(h('p', { class: 'banner', text: `New version ready${cards}: it loads when you return to Home.` }));
+  }
+
+  /** Reload into the new version, once every save has finished. */
+  async #reload(): Promise<void> {
+    this.#blocked = true;
+    await this.app.db.idle();
+    location.reload();
   }
 
   async #mount(): Promise<void> {
@@ -119,6 +145,7 @@ export class Shell {
     this.#current?.dispose?.();
     this.#current = null;
     const route = parseRoute(location.hash);
+    if (route === 'home' && this.#updated) return void this.#reload();
     try {
       const screen = await this.#screens[route](this.app);
       // A later navigation won the race, or a block was raised while this
