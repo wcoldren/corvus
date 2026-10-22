@@ -205,7 +205,8 @@ export class ReviewRun {
   }
 
   #queue<T>(write: () => Promise<T>): Promise<T> {
-    const result = this.#writes.then(write);
+    // Tracked from now, not from when it starts, so a reload waits for it.
+    const result = this.#ctx.db.track(this.#writes.then(write));
     this.#writes = result.then(
       () => {},
       () => {

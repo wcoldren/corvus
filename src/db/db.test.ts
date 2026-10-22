@@ -108,6 +108,22 @@ describe('idle', () => {
     db.close();
   });
 
+  it('waits for a tracked save that starts after a gap', async () => {
+    const db = fresh();
+    const done: string[] = [];
+    // A queue whose next save starts a task later than idle() would look.
+    const later = new Promise<void>((r) => setTimeout(r, 20)).then(() =>
+      db.write(async (c) => {
+        await c.put('meta', 'late', 'late');
+        done.push('late');
+      }),
+    );
+    void db.track(later);
+    await db.idle();
+    expect(done).toEqual(['late']);
+    db.close();
+  });
+
   it('settles when a write fails', async () => {
     const db = fresh();
     const failed = db.write(async () => {

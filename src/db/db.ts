@@ -118,7 +118,7 @@ export class Db {
   readonly bus: Bus;
   #onBlocking: () => void;
   #conn: Promise<Conn> | null = null;
-  /** Writes that have not settled yet, for idle(). */
+  /** Writes, and queued saves, that have not settled yet, for idle(). */
   #writing = new Set<Promise<unknown>>();
 
   constructor(opts: DbOptions = {}) {
@@ -179,26 +179,36 @@ export class Db {
    * fix them.
    */
   write<T>(fn: (db: Conn) => Promise<T>): Promise<T> {
-    const write = this.#withReopen(fn).catch((e: unknown) => {
-      throw isDbError(e) ? new NotSavedError(e) : e;
-    });
-    this.#writing.add(write);
-    write.then(
-      () => this.#writing.delete(write),
-      () => this.#writing.delete(write),
+    return this.track(
+      this.#withReopen(fn).catch((e: unknown) => {
+        throw isDbError(e) ? new NotSavedError(e) : e;
+      }),
     );
-    return write;
   }
 
   /**
-   * Resolves once no write is running. A reload for a new version waits on
-   * this, so it never cuts off a save (SPEC.md, Updates).
+   * Count a save that is queued but may not have called write() yet, so
+   * idle() waits for it too. A save queue (the review run's) passes each save
+   * here when it is queued.
+   */
+  track<T>(pending: Promise<T>): Promise<T> {
+    this.#writing.add(pending);
+    pending.then(
+      () => this.#writing.delete(pending),
+      () => this.#writing.delete(pending),
+    );
+    return pending;
+  }
+
+  /**
+   * Resolves once no write is running or queued. A reload for a new version
+   * waits on this, so it never cuts off a save (SPEC.md, Updates).
    */
   async idle(): Promise<void> {
     for (;;) {
       await Promise.allSettled([...this.#writing]);
-      // A write queue (the review run's) starts its next write from the last
-      // one's promise callback. Waiting a task lets that start before looking.
+      // A write started from a settling write's callback is added after
+      // allSettled took its list; waiting a task lets it show up.
       await new Promise((r) => setTimeout(r, 0));
       if (this.#writing.size === 0) return;
     }
