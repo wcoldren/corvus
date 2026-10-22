@@ -74,7 +74,9 @@ export function startUpdates(): Updates {
       await reg.update();
       return ready || reg.installing || reg.waiting ? 'found' : 'current';
     } catch {
-      // Offline, most likely; the next resume tries again.
+      // Offline, most likely. Forget this try, so the next resume tries
+      // again instead of waiting out the spacing.
+      lastCheck = 0;
       return 'failed';
     }
   }
