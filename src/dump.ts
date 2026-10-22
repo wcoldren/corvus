@@ -32,17 +32,34 @@ export interface Backup {
 
 /** The whole database as a backup, read in one transaction so it is consistent. */
 export async function dumpDatabase(conn: Conn, opts: { now: number; buildId: string }): Promise<Backup> {
+  // The stores read below, and only those. db.ts's transact() isn't used,
+  // since importing db.ts would bring the app's database code into recovery.
   const tx = conn.transaction(['reviewLog', 'params', 'cardState', 'meta'], 'readonly');
   const states = tx.objectStore('cardState');
-  const [reviewLog, params, stateKeys, stateValues, settings, unlocked] = await Promise.all([
-    tx.objectStore('reviewLog').index('byTs').getAll(),
-    tx.objectStore('params').getAll(),
-    states.getAllKeys(),
-    states.getAll(),
-    tx.objectStore('meta').get('settings'),
-    tx.objectStore('meta').get('unlockedThrough'),
-  ]);
-  await tx.done;
+  let read;
+  try {
+    read = await Promise.all([
+      tx.objectStore('reviewLog').index('byTs').getAll(),
+      tx.objectStore('params').getAll(),
+      states.getAllKeys(),
+      states.getAll(),
+      tx.objectStore('meta').get('settings'),
+      tx.objectStore('meta').get('unlockedThrough'),
+    ]);
+    await tx.done;
+  } catch (e) {
+    // idb creates tx.done with the transaction, so it rejects when a read
+    // fails. Handle it here, or it reaches the unhandledrejection handler
+    // as a second, misleading error.
+    try {
+      tx.abort();
+    } catch {
+      // Already finished or aborted.
+    }
+    await tx.done.catch(() => {});
+    throw e;
+  }
+  const [reviewLog, params, stateKeys, stateValues, settings, unlocked] = read;
   const cardStates = Object.fromEntries(stateKeys.map((k, i) => [k, stateValues[i]!]));
   return {
     format: BACKUP_FORMAT,

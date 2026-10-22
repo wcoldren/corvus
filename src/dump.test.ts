@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
 import { buildExport, validateBackup } from './backup.ts';
-import { Db } from './db/db.ts';
+import { Db, type Conn } from './db/db.ts';
 import { getState, recordReview } from './db/history.ts';
 import { unlockLesson } from './db/meta.ts';
 import { dumpDatabase, openExisting } from './dump.ts';
@@ -67,5 +67,26 @@ describe('dumpDatabase through openExisting', () => {
     expect(fromRecovery).toEqual(fromSettings);
     expect(fromRecovery.counts.reviewLog).toBe(1);
     expect(() => validateBackup(JSON.parse(JSON.stringify(fromRecovery)))).not.toThrow();
+  });
+
+  it('rejects once when the transaction aborts mid-read, leaving no unhandled rejection', async () => {
+    const name = freshName();
+    const db = await withOneReview(name);
+    db.close();
+    const conn = (await openExisting(name))!;
+    // Abort each transaction once its requests are made, as a dropped
+    // connection would. Vitest fails the run on an unhandled rejection.
+    const aborting = new Proxy(conn, {
+      get(target, prop) {
+        if (prop !== 'transaction') return Reflect.get(target, prop);
+        return (...args: Parameters<Conn['transaction']>) => {
+          const tx = target.transaction(...args);
+          queueMicrotask(() => tx.abort());
+          return tx;
+        };
+      },
+    });
+    await expect(dumpDatabase(aborting, { now: 1, buildId: 'b' })).rejects.toThrow();
+    conn.close();
   });
 });
