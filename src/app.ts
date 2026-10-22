@@ -130,14 +130,18 @@ export class Shell {
     const route = parseRoute(location.hash);
     try {
       const screen = await this.#screens[route](this.app);
-      // A later navigation won the race; this screen is no longer wanted.
-      if (ticket !== this.#mounting) return screen.dispose?.();
+      // A later navigation won the race, or a block was raised while this
+      // screen loaded; either way it is no longer wanted.
+      if (ticket !== this.#mounting || this.#blocked) return screen.dispose?.();
       this.#current = screen;
       replace(this.#main, screen.el);
       document.title = route === 'home' ? 'Corvus' : `Corvus · ${route[0]!.toUpperCase()}${route.slice(1)}`;
       this.#startup?.resolve();
       this.#startup = null;
     } catch (e) {
+      // The block banner already owns the screen (the database it closed may
+      // be why this mount failed).
+      if (this.#blocked) return recordError(e);
       const startup = this.#startup;
       if (!startup) return this.#fail(e);
       // Still starting, and a newer mount is under way: it decides the outcome.
@@ -167,6 +171,10 @@ export class Shell {
   #block(text: string): void {
     if (this.#blocked) return;
     this.#blocked = true;
+    // A block during startup is still a started app: the banner, not the
+    // recovery screen, is what the user needs.
+    this.#startup?.resolve();
+    this.#startup = null;
     this.#current?.dispose?.();
     this.#current = null;
     replace(
