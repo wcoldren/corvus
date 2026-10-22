@@ -45,7 +45,9 @@ sw.addEventListener('fetch', (event) => {
   // ignoreVary: a server that answers with `Vary: Origin` would otherwise
   // keep a module script (fetched with an Origin header) from matching the
   // copy precached without one. Each cache holds one build, keyed by URL.
+  // caches.match, not caches.open: opening re-creates the cache, empty, if a
+  // newer worker has deleted it while this one still answers a request.
   event.respondWith(
-    caches.open(CACHE).then(async (cache) => (await cache.match(key, { ignoreVary: true })) ?? fetch(request)),
+    caches.match(key, { cacheName: CACHE, ignoreVary: true }).then((hit) => hit ?? fetch(request)),
   );
 });
