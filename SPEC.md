@@ -312,7 +312,7 @@ Startup runs inside a try/catch, with `error` and `unhandledrejection` handlers.
 ## Daily workflow
 
 1. The lesson chat in claude.ai attaches this repo and, following `docs/card-authoring.md`, writes `cards/lesson-NN.json`, fixes earlier cards in place, and fills in the syllabus's Cards column.
-2. It runs `npm run verify` and opens a pull request from its own branch. Nothing is pushed to `main`.
+2. It runs `npm run verify` and opens a pull request from its own branch. Nothing is pushed to `main`. GitHub Actions runs verify again on the pull request.
 3. Merging the pull request is the go-ahead, since a push to `main` deploys. GitHub Actions runs the verify job and then the deploy job.
 4. The next time the app opens or resumes, it picks up the new build (see Updates).
 5. After finishing the lesson, the learner taps "unlock" on Home.
@@ -367,7 +367,7 @@ It also prints each file's instance count and estimated seconds, and the cumulat
 
 ## Testing and release
 
-- `npm run verify` runs check-cards, `tsc --noEmit`, the unit tests and `vite build`. The Pages workflow runs it as a job that the deploy job `needs`, in one concurrency group. Rolling back means reverting the commit and letting the workflow redeploy.
+- `npm run verify` runs check-cards, `tsc --noEmit`, the unit tests and `vite build`. The Pages workflow runs it as a job that the deploy job `needs`, in one concurrency group. On a pull request to `main` the same workflow runs only the verify job, so the pull request shows a pass or fail before it is merged. Rolling back means reverting the commit and letting the workflow redeploy.
 - Unit tests cover at least:
   - answer checking, with cases drawn from the lesson data;
   - the pinned scheduler config;
