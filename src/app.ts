@@ -70,6 +70,8 @@ export class Shell {
   #current: Screen | null = null;
   #mounting = 0;
   #blocked = false;
+  /** Settles start(); null once a first screen has shown or startup failed. */
+  #startup: { resolve: () => void; reject: (e: unknown) => void } | null = null;
 
   constructor(root: HTMLElement, screens: Record<Route, ScreenFactory>) {
     this.#screens = screens;
@@ -101,11 +103,13 @@ export class Shell {
   }
 
   /**
-   * Show the first screen and follow navigation from then on. Rejects if the
-   * first screen fails, so startup can fall back to the recovery screen;
-   * later failures are reported on the screen instead.
+   * Show the first screen and follow navigation from then on. Rejects if no
+   * screen could be shown, so startup can fall back to the recovery screen;
+   * once one has shown, failures are reported on the screen instead. If the
+   * user navigates before the first screen shows, the newer screen decides.
    */
   start(): Promise<void> {
+    const started = new Promise<void>((resolve, reject) => (this.#startup = { resolve, reject }));
     addEventListener('hashchange', () => void this.#mount());
     // iPadOS often resumes a Home Screen app rather than relaunching it.
     document.addEventListener('visibilitychange', () => {
@@ -114,10 +118,11 @@ export class Shell {
     addEventListener('pageshow', (e) => {
       if (e.persisted) this.#current?.resume?.();
     });
-    return this.#mount(true);
+    void this.#mount();
+    return started;
   }
 
-  async #mount(first = false): Promise<void> {
+  async #mount(): Promise<void> {
     if (this.#blocked) return;
     const ticket = ++this.#mounting;
     this.#current?.dispose?.();
@@ -130,11 +135,18 @@ export class Shell {
       this.#current = screen;
       replace(this.#main, screen.el);
       document.title = route === 'home' ? 'Corvus' : `Corvus · ${route[0]!.toUpperCase()}${route.slice(1)}`;
+      this.#startup?.resolve();
+      this.#startup = null;
     } catch (e) {
-      if (!first) return this.#fail(e);
-      // The recovery screen takes over the page; this shell stops mounting.
+      const startup = this.#startup;
+      if (!startup) return this.#fail(e);
+      // Still starting, and a newer mount is under way: it decides the outcome.
+      if (ticket !== this.#mounting) return recordError(e);
+      // No screen has shown. The recovery screen takes over the page, and
+      // this shell stops mounting.
       this.#blocked = true;
-      throw e;
+      this.#startup = null;
+      startup.reject(e);
     }
   }
 
