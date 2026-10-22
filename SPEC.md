@@ -311,9 +311,9 @@ Startup runs inside a try/catch, with `error` and `unhandledrejection` handlers.
 
 ## Daily workflow
 
-1. The lesson chat in claude.ai writes `lesson-NN.json`, following `docs/card-authoring.md`, plus any fixes to earlier cards as `{id, field, value}` lists.
-2. On the Mac, Claude Code saves the file into `cards/`, applies the fixes, runs `npm run verify`, and commits.
-3. A push to `main` deploys, so it waits for an explicit go-ahead. GitHub Actions runs the verify job and then the deploy job.
+1. The lesson chat in claude.ai attaches this repo and, following `docs/card-authoring.md`, writes `cards/lesson-NN.json`, fixes earlier cards in place, and fills in the syllabus's Cards column.
+2. It runs `npm run verify` and opens a pull request from its own branch. Nothing is pushed to `main`.
+3. Merging the pull request is the go-ahead, since a push to `main` deploys. GitHub Actions runs the verify job and then the deploy job.
 4. The next time the app opens or resumes, it picks up the new build (see Updates).
 5. After finishing the lesson, the learner taps "unlock" on Home.
 

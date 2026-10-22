@@ -1,15 +1,16 @@
 # Writing card files
 
-This is the guide for the lesson chat that writes each lesson's cards. Keep it in the claude.ai project next to `cards/schema.json` and `languages/la.json`, and upload all three again whenever one changes. `SPEC.md` is the source of truth for how the app uses these fields; this file covers what to write.
+This is the guide for the lesson chat that writes each lesson's cards. The chat attaches this repo and works on its files directly: `cards/schema.json` and `languages/la.json` define what is valid, and `SPEC.md` is the source of truth for how the app uses these fields. This file covers what to write.
 
 ## What a lesson produces
 
-At the end of a lesson, emit:
+At the end of a lesson, open one pull request on its own branch with:
 
-1. **One card file**, `lesson-NN.json`, where `NN` is this chat's lesson number with two digits. It must validate against `cards/schema.json`.
-2. **Fixes to earlier cards**, if any, as a list (see Changing earlier cards). Leave it out when there are none.
+1. **One card file**, `cards/lesson-NN.json`, where `NN` is this lesson's number with two digits: one more than the highest existing card file. It must validate against `cards/schema.json`.
+2. **Fixes to earlier cards**, if any, made in place in their own files (see Changing earlier cards).
+3. **The syllabus's Cards column** filled in with `lesson-NN` for each row the lesson covered.
 
-Nothing else goes in the file: no comments, and no cards for other lessons.
+Nothing else goes in the card file: no comments, and no cards for other lessons. Don't push to `main`, which deploys; the learner merges the pull request.
 
 ```json
 {
@@ -21,7 +22,7 @@ Nothing else goes in the file: no comments, and no cards for other lessons.
 }
 ```
 
-- `lesson` is the lesson chat's own number, which is also the unlock key. It is not the syllabus row number: the two have drifted, and `docs/syllabus.md` maps one to the other.
+- `lesson` is the card file's number, which is also the unlock key. It is not the syllabus row number: the two have drifted, and `docs/syllabus.md` maps one to the other.
 - `unit` is the syllabus unit. It never goes down from one lesson to the next.
 - `title` is the lesson's topic in plain words.
 
@@ -175,20 +176,11 @@ A card already in the app is changed in place only when it still tests the same 
 - **Same fact, edit in place**: a typo, a macron, an added `accept`, a better note, a missing valid parse cell.
 - **Different fact, new card**: retire the old one with `"retired": true` and write the replacement in the current lesson's file, under a new id. Cards never move between files.
 
-Send fixes as a list of `{id, field, value}` objects, one per field changed:
+Make fixes directly in the earlier file, and list them in the pull request description, one line per card: its id, the field, and why. When a fix changes a card's answer, run `npm run check-cards -- --base origin/main` and confirm the change still tests the same fact.
 
-```json
-[
-  { "id": "la-02-v-anima", "field": "accept", "value": ["spirit", "life", "breath", "mind"] },
-  { "id": "la-03-x-caeli", "field": "retired", "value": true }
-]
-```
+## Before committing
 
-`value` replaces the whole field; there is no partial edit.
-
-## Before emitting
-
-Check each of these, and fix the file rather than noting the problem:
+Run `npm run verify` and fix every failure. Mention any check-cards warnings in the pull request. check-cards catches most of the list below, but not all of it, so check each, and fix the file rather than noting the problem:
 
 1. The file parses as JSON, `lesson` matches the file name, and every id starts with `la-NN-` for this lesson.
 2. No id has been used before, in this file or an earlier one.

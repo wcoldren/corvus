@@ -7,7 +7,7 @@ About 80 daily lessons of roughly 10 minutes take you from zero to reading Aquin
 - **Each lesson:** one new idea, a short story passage, 3–5 exercises, and one card file of about 13–14 new words and 20–22 cards in all (the budget is in `docs/card-authoring.md`).
 - **Pronunciation:** Ecclesiastical throughout (*c* before e/i = "ch", *g* before e/i = "j", *ae* = "eh", *ti* + vowel = "tsee").
 - **Review rhythm:** a quick quiz on older material every 5th lesson, and a full review lesson at the end of each unit.
-- **Chats:** one chat per lesson in this project. Open each by pasting the previous lesson's recap.
+- **Chats:** one chat per lesson in the claude.ai project. Open each by attaching the corvus repo and pasting the previous lesson's recap.
 - **Flashcards:** daily reviews in the app take care of memorization, so lessons can stay short and keep moving. Reviews take about 20 minutes a day, rarely more than 30.
 - **Vocabulary:** about 1,100 words by the end of the course, or nearer 900 if review and reading lessons add none. Both figures come from a simulation with guessed answer times, and get rechecked after 30 days of logged reviews.
 - **Pace rule:** a missed day changes nothing. When the app suggests a review day, take it before the next new lesson.
@@ -170,7 +170,7 @@ Real texts arrive as soon as the grammar can carry them, with unfamiliar forms g
 
 The app, **corvus**, is built in this repo, and `SPEC.md` describes it. It is a web app on GitHub Pages, added to the iPad Home Screen and scheduled with FSRS (the algorithm modern Anki uses).
 
-- **Card files:** each lesson ends with one, `cards/lesson-NN.json`, written to `docs/card-authoring.md` and committed to the repo. The file carries its lesson number and unit, so quizzes can draw on older material. Its cards join the reviews once the lesson is unlocked in the app.
+- **Card files:** each lesson ends with one, `cards/lesson-NN.json`, written to `docs/card-authoring.md` and merged through a pull request. The file carries its lesson number and unit, so quizzes can draw on older material. Its cards join the reviews once the lesson is unlocked in the app.
 - **Card types:**
   1. Vocab: Latin → English, with genitive and gender on nouns, and English → Latin for the words worth producing
   2. Concept: "What does the dative do?"
