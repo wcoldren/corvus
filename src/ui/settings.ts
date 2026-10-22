@@ -14,8 +14,9 @@ import {
 } from '../backup.ts';
 import { getLastExport } from '../db/meta.ts';
 import { readErrors } from '../errors.ts';
-import { backupPanel, formatWhen, type BackupPanel } from './backup.ts';
+import { backupPanel, type BackupPanel } from './backup.ts';
 import { h, replace } from './dom.ts';
+import { formatWhen } from './share.ts';
 import { routeHash } from './router.ts';
 
 /** A button that stays disabled until `word` is typed (SPEC.md, Import and reset). */

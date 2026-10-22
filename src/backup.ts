@@ -9,69 +9,16 @@
 // rebuilt by replaying the merged log, never copied from the file.
 
 import { STORES, clearAll, transact, type Db, type Tx } from './db/db.ts';
-import { localZone, studyDay, type Zone } from './day.ts';
+import { BACKUP_FORMAT, BACKUP_VERSION, dumpDatabase, type Backup } from './dump.ts';
 import { LOG_FIELDS, LOG_KINDS, LOG_V, MANUAL_ACTIONS, buildDaily, replay, type LogRow } from './log.ts';
 import type { Unlocked } from './queue.ts';
 import type { CardState, Params } from './scheduler.ts';
 
-export const BACKUP_FORMAT = 'corvus-backup';
-export const BACKUP_VERSION = 1;
+export { BACKUP_FORMAT, BACKUP_VERSION, backupFileName, type Backup } from './dump.ts';
 
-export interface Backup {
-  format: typeof BACKUP_FORMAT;
-  formatVersion: typeof BACKUP_VERSION;
-  exportedAt: number;
-  buildId: string;
-  dbVersion: number;
-  settings: Record<string, unknown> | null;
-  unlockedThrough: Unlocked;
-  params: Params[];
-  /** The content. Everything else in the file can be rebuilt from it or is small. */
-  reviewLog: LogRow[];
-  /** For checking an import against; never imported as such. */
-  cardStates: Record<string, CardState>;
-  counts: { reviewLog: number; cardStates: number; params: number; newestTs: number | null };
-}
-
-/** The whole database as a backup, read in one transaction so it is consistent. */
-export async function buildExport(db: Db, opts: { now: number; buildId: string }): Promise<Backup> {
-  return db.read(async (conn) => {
-    const [reviewLog, params, stateKeys, stateValues, settings, unlocked] = await transact(conn, STORES, 'readonly', (tx) => {
-      const states = tx.objectStore('cardState');
-      return Promise.all([
-        tx.objectStore('reviewLog').index('byTs').getAll(),
-        tx.objectStore('params').getAll(),
-        states.getAllKeys(),
-        states.getAll(),
-        tx.objectStore('meta').get('settings'),
-        tx.objectStore('meta').get('unlockedThrough'),
-      ]);
-    });
-    const cardStates = Object.fromEntries(stateKeys.map((k, i) => [k, stateValues[i]!]));
-    return {
-      format: BACKUP_FORMAT,
-      formatVersion: BACKUP_VERSION,
-      exportedAt: opts.now,
-      buildId: opts.buildId,
-      dbVersion: conn.version,
-      settings: (settings as Backup['settings'] | undefined) ?? null,
-      unlockedThrough: (unlocked as Unlocked | undefined) ?? {},
-      params,
-      reviewLog,
-      cardStates,
-      counts: {
-        reviewLog: reviewLog.length,
-        cardStates: stateKeys.length,
-        params: params.length,
-        newestTs: reviewLog.at(-1)?.ts ?? null,
-      },
-    };
-  });
-}
-
-/** `corvus-backup-YYYY-MM-DD.json`, by the local calendar date. */
-export function backupFileName(now: number, zone: Zone = localZone): string {
-  return `corvus-backup-${studyDay(now, 0, zone)}.json`;
+/** The whole database as a backup (dump.ts, shared with the recovery screen). */
+export function buildExport(db: Db, opts: { now: number; buildId: string }): Promise<Backup> {
+  return db.read((conn) => dumpDatabase(conn, opts));
 }
 
 export class BackupError extends Error {

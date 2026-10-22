@@ -5,10 +5,9 @@
 
 import { openDB, type DBSchema, type IDBPDatabase, type IDBPTransaction, type StoreNames } from 'idb';
 import { Bus } from '../bus.ts';
+import { DB_NAME } from '../dump.ts';
 import type { DailyRow, LogRow } from '../log.ts';
 import type { CardState, Params } from '../scheduler.ts';
-
-export const DB_NAME = 'corvus';
 
 export interface CorvusSchema extends DBSchema {
   /** The record of truth, appended to and never changed. */
