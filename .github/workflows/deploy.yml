@@ -1,11 +1,14 @@
 # Every push to main deploys to GitHub Pages (SPEC.md, Testing and release).
 # The deploy job needs verify, so a failing check deploys nothing, and what
-# it deploys is the dist/ that verify built and tested.
+# it deploys is the dist/ that verify built and tested. A pull request runs
+# the same verify job and stops there, so it shows its check before merging.
 
 name: Deploy
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   # Redeploy by hand, e.g. after a rollback revert has already been pushed.
   workflow_dispatch:
@@ -13,10 +16,12 @@ on:
 permissions:
   contents: read
 
-# One run at a time, and a queued run never cancels one that is deploying.
+# Deploys run one at a time, and a queued deploy never cancels one in
+# progress. Each pull request has its own group, so its checks never wait
+# behind a deploy, and a new push to it cancels its older run.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   verify:
@@ -30,11 +35,13 @@ jobs:
       - run: npm ci
       # check-cards, tsc, the unit tests and vite build.
       - run: npm run verify
-      - uses: actions/upload-pages-artifact@v5
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: verify
     runs-on: ubuntu-latest
     permissions:
