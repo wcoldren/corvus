@@ -5,7 +5,9 @@
 // installed; the shell decides when the page reloads into it.
 //
 // main.ts starts this before the app loads, so a fixed build still reaches a
-// device whose app fails at startup.
+// device whose app fails at startup. The worker is registered once the app
+// has started or failed to: its first install downloads every file again,
+// and should not compete with the app's own startup for the network.
 
 import { recordError } from '../errors.ts';
 
@@ -27,6 +29,8 @@ export interface Updates {
 }
 
 const SPACING_MS = 10 * 60_000;
+/** How long registration waits for a startup that neither shows a screen nor fails. */
+const STARTUP_WAIT_MS = 10_000;
 
 /** Development builds never register a worker, so they never cache. */
 const off: Updates = {
@@ -48,12 +52,14 @@ async function readVersion(base: string): Promise<NewVersion> {
   }
 }
 
-export function startUpdates(): Updates {
+/** `appStarted` settles once the first screen shows or startup fails. */
+export function startUpdates(appStarted: Promise<unknown>): Updates {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return off;
   const container = navigator.serviceWorker;
   const base = import.meta.env.BASE_URL;
+  const startup = Promise.race([appStarted, new Promise((r) => setTimeout(r, STARTUP_WAIT_MS))]);
   // 'none': the browser checks sw.js itself, never an HTTP-cached copy.
-  const registration = container.register(`${base}sw.js`, { scope: base, updateViaCache: 'none' });
+  const registration = startup.then(() => container.register(`${base}sw.js`, { scope: base, updateViaCache: 'none' }));
   registration.catch(recordError);
 
   let ready: NewVersion | null = null;

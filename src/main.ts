@@ -24,9 +24,11 @@ async function persistStorage(): Promise<void> {
 }
 
 void persistStorage();
-const updates = startUpdates();
+let appStarted!: () => void;
+const updates = startUpdates(new Promise<void>((r) => (appStarted = r)));
 
 const root = document.querySelector<HTMLElement>('#app')!;
 import('./start.ts')
   .then((m) => m.start(root, updates))
-  .catch((e: unknown) => showRecovery(root, e));
+  .catch((e: unknown) => showRecovery(root, e))
+  .finally(appStarted);
