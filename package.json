@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:startup-fail": "vite build --mode startup-fail",
     "preview": "vite preview",
     "test": "vitest run",
     "check-cards": "node scripts/check-cards.ts",

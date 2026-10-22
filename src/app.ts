@@ -100,7 +100,12 @@ export class Shell {
     }
   }
 
-  start(): void {
+  /**
+   * Show the first screen and follow navigation from then on. Rejects if the
+   * first screen fails, so startup can fall back to the recovery screen;
+   * later failures are reported on the screen instead.
+   */
+  start(): Promise<void> {
     addEventListener('hashchange', () => void this.#mount());
     // iPadOS often resumes a Home Screen app rather than relaunching it.
     document.addEventListener('visibilitychange', () => {
@@ -109,10 +114,10 @@ export class Shell {
     addEventListener('pageshow', (e) => {
       if (e.persisted) this.#current?.resume?.();
     });
-    void this.#mount();
+    return this.#mount(true);
   }
 
-  async #mount(): Promise<void> {
+  async #mount(first = false): Promise<void> {
     if (this.#blocked) return;
     const ticket = ++this.#mounting;
     this.#current?.dispose?.();
@@ -126,7 +131,10 @@ export class Shell {
       replace(this.#main, screen.el);
       document.title = route === 'home' ? 'Corvus' : `Corvus · ${route[0]!.toUpperCase()}${route.slice(1)}`;
     } catch (e) {
-      this.#fail(e);
+      if (!first) return this.#fail(e);
+      // The recovery screen takes over the page; this shell stops mounting.
+      this.#blocked = true;
+      throw e;
     }
   }
 
