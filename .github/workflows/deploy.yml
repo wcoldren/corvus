@@ -1,0 +1,48 @@
+# Every push to main deploys to GitHub Pages (SPEC.md, Testing and release).
+# The deploy job needs verify, so a failing check deploys nothing, and what
+# it deploys is the dist/ that verify built and tested.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  # Redeploy by hand, e.g. after a rollback revert has already been pushed.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One run at a time, and a queued run never cancels one that is deploying.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      # check-cards, tsc, the unit tests and vite build.
+      - run: npm run verify
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
