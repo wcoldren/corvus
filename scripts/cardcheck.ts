@@ -24,6 +24,8 @@ export interface CorpusInput {
   packFiles: NamedFile[];
   /** cards/epoch.json exists. */
   epoch: boolean;
+  /** Once the epoch exists: the live site's ids.json, parsed, or why it couldn't be read. */
+  liveIds?: { data: unknown } | { error: string };
   /** With --base <ref>: the lesson files at that ref. */
   base?: NamedFile[];
 }
@@ -181,17 +183,30 @@ export function checkCorpus(input: CorpusInput): CorpusResult {
     }
   }
 
-  // Rule 10, once the epoch exists: no deployed id may disappear. It needs
-  // the live site's ids.json, which the deploy step adds; until it is written,
-  // an epoch file fails rather than skipping the check.
-  if (input.epoch) {
-    fails.push('cards/epoch.json exists but the registry check (rule 10) is not implemented yet');
-  }
+  // Rule 10, once the epoch exists: no deployed id may disappear, because
+  // review history is keyed by it. Retired cards are still loaded, so
+  // retiring passes. Without the live list the rule can't be checked, and
+  // that fails rather than skipping.
+  if (input.epoch) fails.push(...checkRegistry(input.liveIds, cards));
 
   warns.push(...acceptCollisions(cards, packs));
   if (input.base) warns.push(...changedAnswers(input.base, files, fileName));
   const lessons = report(files, fileName, cards, warns);
   return { fails, warns, lessons };
+}
+
+/** Rule 10: every id in the live ids.json is still a card here. */
+function checkRegistry(live: CorpusInput['liveIds'], cards: Card[]): string[] {
+  if (!live) return ['rule 10: cards/epoch.json exists, but no live ids.json was read'];
+  if ('error' in live) return [`rule 10: could not read the live ids.json: ${live.error}`];
+  const ids = live.data;
+  if (!Array.isArray(ids) || !ids.every((id) => typeof id === 'string')) {
+    return ['rule 10: the live ids.json is not a list of card ids'];
+  }
+  const here = new Set(cards.map((c) => c.id));
+  return ids
+    .filter((id) => !here.has(id))
+    .map((id) => `rule 10: ${id} is deployed but no longer in the card files; restore it from git history, and retire it instead of deleting it`);
 }
 
 function schemaErrors(name: string, errors: ErrorObject[] | null | undefined): string[] {

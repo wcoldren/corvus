@@ -2,6 +2,7 @@
   "name": "corvus",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://wcoldren.github.io/corvus/",
   "type": "module",
   "engines": {
     "node": ">=24"
