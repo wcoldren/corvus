@@ -4,6 +4,8 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { loadCards } from '../src/cards/load.ts';
+import type { CardFile } from '../src/cards/types.ts';
 import { checkCorpus, type CorpusInput } from './cardcheck.ts';
 
 const dir = (rel: string) => fileURLToPath(new URL(`../${rel}/`, import.meta.url));
@@ -21,6 +23,9 @@ const real: CorpusInput = {
   packFiles: named('languages', ['schema.json']),
   epoch: false,
 };
+
+// What the build writes to ids.json for the real lessons: every id, `~r` included.
+const liveIds = loadCards(real.cardFiles.map((f) => f.data as CardFile)).map((c) => c.id);
 
 // Loose JSON access for mutations.
 type Json = any;
@@ -117,7 +122,27 @@ const cases: Case[] = [
   ['an answer that grades wrong against itself', true, (i) => (E(i).answer = '?!'), 'grades as wrong'],
   ['an accept entry with nothing to type', true, (i) => (E(i).accept = ['/']), 'leaves no answer'],
   // --- rule 10
-  ['an epoch file before the registry check exists', true, (i) => (i.epoch = true), 'rule 10'],
+  ['an epoch with no live ids.json', true, (i) => (i.epoch = true), 'no live ids.json was read'],
+  ['an epoch whose live ids.json could not be fetched', true, (i) => ((i.epoch = true), (i.liveIds = { error: 'offline' })), 'could not read'],
+  ['an epoch whose live ids.json is not a list of ids', true, (i) => ((i.epoch = true), (i.liveIds = { data: { ids: [] } })), 'not a list'],
+  ['an epoch with every deployed id still here', false, (i) => ((i.epoch = true), (i.liveIds = { data: liveIds })), undefined],
+  ['a deployed card deleted', true, (i) => {
+    i.epoch = true;
+    i.liveIds = { data: liveIds };
+    i.files[L2].cards = i.files[L2].cards.filter((c: Json) => c.id !== 'la-02-v-gloria');
+  }, 'la-02-v-gloria is deployed'],
+  ['a deployed reverse card dropped', true, (i) => {
+    i.epoch = true;
+    i.liveIds = { data: liveIds };
+    delete V(i).reverse;
+  }, 'la-02-v-gloria~r is deployed'],
+  ['a deployed card retired', false, (i) => ((i.epoch = true), (i.liveIds = { data: liveIds }), (V(i).retired = true)), undefined],
+  ['a deployed reverse card retired', false, (i) => {
+    i.epoch = true;
+    i.liveIds = { data: liveIds };
+    V(i).reverse = { ...(V(i).reverse === true ? {} : V(i).reverse), retired: true };
+  }, undefined],
+  ['a live list ignored before the epoch', false, (i) => (i.liveIds = { data: ['la-99-v-gone'] }), undefined],
 ];
 
 describe.each(cases)('%s', (_label, fails, mutate, text) => {
