@@ -11,6 +11,7 @@ import { recordError } from './errors.ts';
 import type { LanguagePack } from './pack/types.ts';
 import { h, replace } from './ui/dom.ts';
 import { parseRoute, routeHash, type Route } from './ui/router.ts';
+import { SAFARI_TAB_WARNING, isSafariTab } from './ui/safari.ts';
 
 export interface App {
   db: Db;
@@ -55,12 +56,6 @@ function bundledLanguage(): { language: string; pack: LanguagePack } {
   return { language, pack };
 }
 
-/** iPadOS Safari, in a tab rather than the Home Screen app (SPEC.md, iPad facts). */
-function isSafariTab(): boolean {
-  const standalone = (navigator as Navigator & { standalone?: boolean }).standalone;
-  return standalone === false && !matchMedia('(display-mode: standalone)').matches;
-}
-
 export class Shell {
   readonly app: App;
   #screens: Record<Route, ScreenFactory>;
@@ -96,9 +91,7 @@ export class Shell {
     };
     replace(root, this.#banners, this.#main, this.#toasts);
     if (isSafariTab()) {
-      this.#banners.append(
-        h('p', { class: 'banner', text: 'This is a Safari tab. Progress here is separate from the Home Screen app.' }),
-      );
+      this.#banners.append(h('p', { class: 'banner', text: SAFARI_TAB_WARNING }));
     }
   }
 

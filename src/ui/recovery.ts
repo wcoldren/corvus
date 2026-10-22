@@ -6,6 +6,7 @@
 import { recordError } from '../errors.ts';
 import { dumpDatabase, openExisting } from '../dump.ts';
 import { h, replace } from './dom.ts';
+import { SAFARI_TAB_WARNING, isSafariTab } from './safari.ts';
 import { backupFile, filePanel } from './share.ts';
 
 declare const __BUILD_ID__: string;
@@ -71,6 +72,9 @@ export function showRecovery(root: HTMLElement, error: unknown): void {
   document.title = 'Corvus · Recovery';
   replace(
     root,
+    // The shell's banners are gone with the rest of the page, but an export
+    // from a tab holds the tab's progress, not the Home Screen app's.
+    h('div', { class: 'banners' }, isSafariTab() && h('p', { class: 'banner', text: SAFARI_TAB_WARNING })),
     h('div', { class: 'screen' },
       h('div', { class: 'recovery stack', attrs: { role: 'alert' } },
         h('h1', { text: 'Corvus could not start' }),
