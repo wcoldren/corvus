@@ -32,6 +32,15 @@ async function clearAppCache(): Promise<void> {
   await Promise.all(names.filter((n) => n.startsWith('corvus-')).map((n) => caches.delete(n)));
 }
 
+/**
+ * Reload at Home. A plain reload keeps the hash, so a screen that fails at
+ * startup would fail again on every reload, with no way to reach the others.
+ */
+function reloadHome(): void {
+  history.replaceState(null, '', location.pathname + location.search);
+  location.reload();
+}
+
 const describe = (e: unknown) => (e instanceof Error ? `${e.name}: ${e.message}` : String(e));
 
 export function showRecovery(root: HTMLElement, error: unknown): void {
@@ -68,7 +77,7 @@ export function showRecovery(root: HTMLElement, error: unknown): void {
         h('p', { class: 'muted', text: describe(error) }),
         h('p', { text: 'Your progress is still on this device. Export it first, before trying anything else. Never delete the app or clear website data to fix this: that deletes your progress.' }),
         backup.el,
-        h('div', { class: 'row' }, h('button', { text: 'Reload', on: { click: () => location.reload() } }), clear),
+        h('div', { class: 'row' }, h('button', { text: 'Reload', on: { click: reloadHome } }), clear),
         status,
         h('p', { class: 'muted', text: `Build ${__BUILD_ID__}` }),
       ),
