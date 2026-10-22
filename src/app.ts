@@ -67,6 +67,8 @@ export class Shell {
   #blocked = false;
   /** A new version controls the page; Home reloads into it. */
   #updated = false;
+  /** Waiting for saves before reloading into a new version; nothing mounts. */
+  #reloading = false;
   /** Settles start(); null once a first screen has shown or startup failed. */
   #startup: { resolve: () => void; reject: (e: unknown) => void } | null = null;
 
@@ -132,15 +134,19 @@ export class Shell {
     this.#banners.append(h('p', { class: 'banner', text: `New version ready${cards}: it loads when you return to Home.` }));
   }
 
-  /** Reload into the new version, once every save has finished. */
+  /**
+   * Reload into the new version, once every save has finished. Not a block:
+   * a save that fails while this waits must still raise "Not saved", and
+   * then the page stays for the user to read it.
+   */
   async #reload(): Promise<void> {
-    this.#blocked = true;
+    this.#reloading = true;
     await this.app.db.idle();
-    location.reload();
+    if (!this.#blocked) location.reload();
   }
 
   async #mount(): Promise<void> {
-    if (this.#blocked) return;
+    if (this.#blocked || this.#reloading) return;
     const ticket = ++this.#mounting;
     this.#current?.dispose?.();
     this.#current = null;
@@ -148,9 +154,9 @@ export class Shell {
     if (route === 'home' && this.#updated) return void this.#reload();
     try {
       const screen = await this.#screens[route](this.app);
-      // A later navigation won the race, or a block was raised while this
-      // screen loaded; either way it is no longer wanted.
-      if (ticket !== this.#mounting || this.#blocked) return screen.dispose?.();
+      // A later navigation won the race, or a block or reload began while
+      // this screen loaded; either way it is no longer wanted.
+      if (ticket !== this.#mounting || this.#blocked || this.#reloading) return screen.dispose?.();
       this.#current = screen;
       replace(this.#main, screen.el);
       document.title = route === 'home' ? 'Corvus' : `Corvus · ${route[0]!.toUpperCase()}${route.slice(1)}`;
